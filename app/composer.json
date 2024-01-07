@@ -1,0 +1,18 @@
+{
+    "require": {
+        "illuminate/database": "^10.24",
+        "laminas/laminas-db": "^2.18",
+        "doctrine/dbal": "^3.7",
+        "codeigniter4/framework": "^4.4",
+        "ext-pdo": "*",
+        "symfony/console": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "../app"
+        },
+        "files": [
+            "Benchmark/Benchmark.php"
+        ]
+    }
+}

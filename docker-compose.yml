@@ -1,0 +1,23 @@
+version: '3'
+services:
+  app:
+    container_name: app-dbal-benchmarks
+    build:
+      context: ./docker/php
+    volumes:
+      - .\app:/app
+    links:
+      - 'db'
+  db:
+    container_name: db-dbal-benchmarks
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+      POSTGRES_DATABASE: dbal_benchmarks
+      POSTGRES_ROOT_PASSWORD: secret
+    volumes:
+      - ./docker/pgsql:/var/lib/pgsql
