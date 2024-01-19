@@ -2,31 +2,27 @@
 
 namespace App\Benchmark;
 
-use JetBrains\PhpStorm\Pure;
+use App\DatabaseConfig;
 
 class Benchmark
 {
-    const DEFAULT_ITERATIONS = 1000; // Adjust the number of iterations as needed
-    private array $methods   = [];
-    private int $iterations  = self::DEFAULT_ITERATIONS;
-    /**
-     * @var string[]
-     */
-    private array $headers;
-    private mixed $maxLength;
+    const DEFAULT_ITERATIONS = 1000;
 
-    public function __construct()
-    {
-        $this->headers = ['Method', 'Avg. Execution Time (ms)', 'Avg. Memory Usage (KB)', 'Hits', 'Misses'];
-        $this->maxLength = max(array_map('strlen', $this->headers));
-    }
+    private array $methods   = [];
+
+    private int $iterations  = self::DEFAULT_ITERATIONS;
+
+    const TABLE_HEADERS      = [
+        'Method',
+        'Avg. Execution Time (ms)',
+        'Memory Usage (KB)',
+        'Hits',
+        'Misses'
+    ];
+
+    private array $results = [];
 
     public function addMethod($methodName, $callback, $setUpCallback = null, $handleException = null) {
-
-        if (strlen($methodName) > $this->getMaxLength()) {
-            $this->setMaxLength(strlen($methodName));
-        }
-
         $this->methods[$methodName] = [
             'callback'        => $callback,
             'setUpCallback'   => $setUpCallback,
@@ -36,8 +32,6 @@ class Benchmark
 
     public function run() {
 
-        $table = $this->prepareTableHeaders();
-
         foreach ($this->methods as $methodName => $method) {
 
             echo "Starting {$methodName} \n";
@@ -46,25 +40,25 @@ class Benchmark
 
             $sharedObject = null;
 
+            $config = new DatabaseConfig();
             if ($method['setUpCallback']) {
                 // Pass the shared object explicitly to the setUpCallback function
-                $sharedObject = call_user_func($method['setUpCallback']);
+                $sharedObject = call_user_func($method['setUpCallback'], $config);
             }
 
             $totalTime = 0;
             $miss = 0;
-            $totalMemory = 0;
+            $startingMemory = memory_get_usage();
 
             for ($i = 0; $i < $this->iterations; $i++) {
 
-                $startingMemory = memory_get_usage();
                 $timeStart = microtime(true);
                 // Conditionally use the shared object based on its availability
                 try {
                     if ($sharedObject !== null) {
-                        call_user_func($method['callback'], $sharedObject);
+                        @call_user_func($method['callback'], $sharedObject);
                     } else {
-                        call_user_func($method['callback']);
+                        @call_user_func($method['callback']);
                     }
                 } catch (\Throwable $throwable) {
                     if ($method['handleException']) {
@@ -75,19 +69,17 @@ class Benchmark
                 }
 
                 $timeEnd = microtime(true);
-                $usedMemory = memory_get_usage();
                 $totalTime += ($timeEnd - $timeStart) * 1000; // milliseconds;
-                $totalMemory += $usedMemory - $startingMemory;
             }
 
+            $usedMemory = memory_get_usage();
             $averageExecutionTime = round($totalTime / $this->iterations, 6);
-            $averageMemoryUsage = round($totalMemory / $this->iterations / 1024, 6); // in kilobytes
+            $memoryUsage = round(($usedMemory - $startingMemory) / 1024, 6); // in kilobytes
 
-            $table .= sprintf(
-                $this->prepareTableFormat(),
+            $this->addResult(
                 $methodName,
                 $averageExecutionTime,
-                $averageMemoryUsage,
+                $memoryUsage,
                 $this->getIterations() - $miss,
                 $miss
             );
@@ -95,43 +87,6 @@ class Benchmark
             echo "Done $methodName \n";
             unset($this->methods[$methodName]);
         }
-
-        echo $table;
-    }
-
-    private function getMaxLength()
-    {
-        return $this->maxLength;
-    }
-
-    private function setMaxLength($length)
-    {
-        $this->maxLength = $length;
-    }
-
-    #[Pure] private function prepareTableHeaders(): string
-    {
-        $headers = sprintf($this->prepareTableFormat(), $this->headers[0], $this->headers[1], $this->headers[2], $this->headers[3], $this->headers[4]);
-        $headers .= sprintf(
-            $this->prepareTableFormat(),
-            str_repeat('-', $this->getMaxLength()),
-            str_repeat('-', $this->getMaxLength()),
-            str_repeat('-', $this->getMaxLength()),
-            str_repeat('-', $this->getMaxLength()),
-            str_repeat('-', $this->getMaxLength())
-        );
-
-        return $headers;
-    }
-
-    #[Pure] private function prepareTableFormat(): string
-    {
-        $headersFormat = '';
-        foreach ($this->headers as $ignored) {
-            $headersFormat .= " %-{$this->getMaxLength()}s |";
-        }
-
-        return "| {$headersFormat}\n";
     }
 
     private function getIterations(): int
@@ -142,5 +97,17 @@ class Benchmark
     public function setIterations(int $n)
     {
         $this->iterations = $n > 0 ? $n : self::DEFAULT_ITERATIONS;
+    }
+
+    private function addResult(string $methodName, float $averageExecutionTime, float $averageMemoryUsage, int $param, int $miss)
+    {
+        $this->results[$methodName] = [
+            $methodName, $averageExecutionTime, $averageMemoryUsage, $param, $miss
+        ];
+    }
+
+    public function getResults(): array
+    {
+        return $this->results;
     }
 }

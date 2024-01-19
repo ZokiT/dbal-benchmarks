@@ -5,7 +5,10 @@
         "doctrine/dbal": "^3.7",
         "codeigniter4/framework": "^4.4",
         "ext-pdo": "*",
-        "symfony/console": "^6.4"
+        "symfony/console": "^6.4",
+        "doctrine/orm": "^2.17",
+        "symfony/cache": "^6.4",
+        "laminas/laminas-hydrator": "^4.15"
     },
     "autoload": {
         "psr-4": {
@@ -13,6 +16,9 @@
         },
         "files": [
             "Benchmark/Benchmark.php"
+        ],
+        "classmap": [
+            "vendor/codeigniter4/framework/app/Config"
         ]
     }
 }

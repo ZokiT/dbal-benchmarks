@@ -5,6 +5,7 @@ use Illuminate;
 
 class User extends Illuminate\Database\Eloquent\Model
 {
+    use \App\User;
     protected $primaryKey = 'user_id';
     protected $table = 'users';
     protected $fillable = ['username', 'email','registration_date', 'is_active', 'birth_date'];

@@ -6,6 +6,7 @@ services:
       context: ./docker/php
     volumes:
       - .\app:/app
+    working_dir: /app
     links:
       - 'db'
   db:
