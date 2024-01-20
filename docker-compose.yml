@@ -1,5 +1,15 @@
 version: '3'
 services:
+  nginx:
+    container_name: nginx-dbal-benchmarks
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./app/public:/var/www/html
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    links:
+      - 'app'
   app:
     container_name: app-dbal-benchmarks
     build:

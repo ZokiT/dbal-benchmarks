@@ -3,6 +3,7 @@
 namespace App\Benchmark;
 
 use App\DatabaseConfig;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Benchmark
 {
@@ -21,6 +22,7 @@ class Benchmark
     ];
 
     private array $results = [];
+    private bool $outputToImage = false;
 
     public function addMethod($methodName, $callback, $setUpCallback = null, $handleException = null) {
         $this->methods[$methodName] = [
@@ -30,11 +32,11 @@ class Benchmark
         ];
     }
 
-    public function run() {
+    public function run(OutputInterface $output) {
 
         foreach ($this->methods as $methodName => $method) {
 
-            echo "Starting {$methodName} \n";
+            $output->writeln("Starting {$methodName}");
             sleep(1);
             gc_collect_cycles(); // garbage collector to have precise memory consumption
 
@@ -84,7 +86,7 @@ class Benchmark
                 $miss
             );
 
-            echo "Done $methodName \n";
+            $output->writeln("Done $methodName");
             unset($this->methods[$methodName]);
         }
     }
@@ -109,5 +111,15 @@ class Benchmark
     public function getResults(): array
     {
         return $this->results;
+    }
+
+    public function setOutputToImage(bool $outputToImage)
+    {
+        $this->outputToImage = $outputToImage;
+    }
+
+    public function getOutputToImage(): bool
+    {
+        return $this->outputToImage;
     }
 }

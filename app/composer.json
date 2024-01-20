@@ -8,7 +8,8 @@
         "symfony/console": "^6.4",
         "doctrine/orm": "^2.17",
         "symfony/cache": "^6.4",
-        "laminas/laminas-hydrator": "^4.15"
+        "laminas/laminas-hydrator": "^4.15",
+        "ext-imagick": "*"
     },
     "autoload": {
         "psr-4": {

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart.js Example</title>
+    <script src="charts/chart.js"></script>
+    <style>
+        canvas {
+            max-width: 300px;
+            max-height: 400px;
+            float: left;
+            padding-left: 60px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-container {
+            margin-bottom: 20px; /* Add margin between the chart containers */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="chart-container">
+        <canvas id="chart1-1" width="300" height="300"></canvas>
+        <canvas id="chart1-2" width="300" height="300"></canvas>
+    </div>
+
+
+
+    <div class="chart-container">
+        <canvas id="chart2" width="300" height="300"></canvas>
+    </div>
+
+</div>
+
+<script>
+    // Fetching JSON data from a file
+    var data11 = {};
+    fetch('/charts/test.json')
+        .then(response => response.json())
+        .then(jsonData => {
+            // Manipulating the HTML with the fetched JSON data
+            // Data from your table
+            let arrayDataset = [];
+            jsonData.results11.benchmarks.map( (benchmark) => {
+                arrayDataset.push({
+                    label: benchmark.method,
+                    data: [benchmark.result],
+                    borderWidth: 2
+                })}
+            );
+
+            data11 = {
+                labels: jsonData.results11.title,
+                datasets: arrayDataset
+            };
+
+            var options11 = {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Custom Chart Title'
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: Math.round,
+                        font: {
+                            weight: 'bold'
+                        },
+                        display: true  // Ensure datalabels are displayed
+                    }
+                },
+                scales: {
+                    x: {
+                        barPercentage: 0.6 // Adjust this value to control the width of the bars
+                    }
+                }
+            };
+
+            // Create the bar chart
+            var ctx11 = document.getElementById('chart1-1').getContext('2d');
+            var myChart11 = new Chart(ctx11, {
+                type: 'bar',
+                data: data11,
+                options: options11
+            });
+        })
+        .catch(error => console.error('Error fetching JSON:', error));
+
+    // Data from your table
+    var data12 = {
+        labels: ['Memory'],
+        datasets: [
+            {
+                label: 'md5',
+                data: [0.120],
+                borderWidth: 2
+            },
+            {
+                label: 'sha1',
+                data: [0.150],
+                borderWidth: 2
+            },
+            {
+                label: 'sha2',
+                data: [0.050],
+                borderWidth: 2
+            },
+            {
+                label: 'sha3',
+                data: [0.080],
+                borderWidth: 2
+            }
+        ]
+    };
+
+    var options12 = {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Custom Chart Title'
+            },
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                formatter: Math.round,
+                font: {
+                    weight: 'bold'
+                },
+                display: true  // Ensure datalabels are displayed
+            }
+        },
+        scales: {
+            x: {
+                barPercentage: 0.6 // Adjust this value to control the width of the bars
+            }
+        },
+        showTooltips: false,
+        onAnimationComplete: function () {
+            var ctx = this.chart.ctx;
+            ctx.font = this.scale.font;
+            ctx.fillStyle = this.scale.textColor
+            ctx.textAlign = "center";
+            ctx.textBaseline = "bottom";
+
+            this.datasets.forEach(function (dataset) {
+                dataset.bars.forEach(function (bar) {
+                    ctx.fillText(bar.value, bar.x, bar.y - 5);
+                });
+            })
+        }
+    };
+
+    // Create the bar chart with datalabels
+    var ctx12 = document.getElementById('chart1-2').getContext('2d');
+    var myChart12 = new Chart(ctx12, {
+        type: 'bar',
+        data: data12,
+        options: options12
+    });
+
+    /// Code for the different way of shown results
+    var data2 = {
+        labels: ['md5', 'sha1', 'sha2', 'sha3'],
+        datasets: [
+            {
+                label: 'Avg Execution time',
+                data: [0.007, 0.006, 0.015, 0.010],
+                borderWidth: 2,
+            },
+            {
+                label: 'memory consumption',
+                data: [0.10, 0.20, 0.15, 0.50],
+                borderWidth: 2
+            }
+        ]
+    };
+
+    var options2 = {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Custom Chart Title'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        var label = context.dataset.label || '';
+                        return label + ': ' + context.parsed.y;
+                    }
+                }
+            },
+        },
+        scales: {
+            x: {
+                barPercentage: 0.6 // Adjust this value to control the width of the bars
+            }
+        },
+        onHover: function (event, chartElement) {
+            document.getElementById('chart2').style.cursor = chartElement[0] ? 'pointer' : 'default';
+        },
+        animation: {
+            onComplete: function () {
+                var chart = this;
+                var ctx = chart.ctx;
+
+                chart.data.datasets.forEach(function (dataset, datasetIndex) {
+                    var meta = chart.getDatasetMeta(datasetIndex);
+
+                    meta.data.forEach(function (bar, index) {
+                        var data = dataset.data[index];
+
+                        if (data !== 0 && dataset.hidden !== true) {
+                            var label = data.toFixed(3);
+                            var textWidth = ctx.measureText(label).width;
+
+                            ctx.fillStyle = 'black';
+                            ctx.fillText(label, bar.x - textWidth / 2, bar.y - 5);
+                        }
+                    });
+                });
+            }
+        },
+        legend: {
+            onClick: function (e, legendItem) {
+                var index = legendItem.datasetIndex;
+                var chart = this.chart;
+
+                chart.getDatasetMeta(index).hidden = chart.getDatasetMeta(index).hidden === null ? !chart.data.datasets[index].hidden : null;
+
+                chart.update();
+            }
+        }
+    };
+
+    // Create the bar chart
+    const ctx2 = document.getElementById('chart2').getContext('2d');
+    var myChart = new Chart(ctx2, {
+        type: 'bar',
+        data: data2,
+        options: options2
+    });
+
+    // Add click event listener for highlighting minimum values
+    document.getElementById('chart2').addEventListener('click', function (event) {
+        var activePoints = myChart.getElementsAtEvent(event);
+        if (activePoints.length > 0) {
+            var minIndex = findMinIndex(myChart, activePoints[0].datasetIndex);
+            highlightMinValue(myChart, activePoints[0].datasetIndex, minIndex);
+        }
+    });
+
+    // Function to find the index of the minimum value in the dataset
+    function findMinIndex(chart, datasetIndex) {
+        var minValue = Math.min.apply(null, chart.data.datasets[datasetIndex].data);
+        return chart.data.datasets[datasetIndex].data.indexOf(minValue);
+    }
+
+    // Function to highlight the minimum value in the dataset
+    function highlightMinValue(chart, datasetIndex, index) {
+        var backgroundColors = chart.data.datasets[datasetIndex].backgroundColor.slice();
+        backgroundColors[index] = 'rgba(255, 0, 0, 0.6)';
+        chart.data.datasets[datasetIndex].backgroundColor = backgroundColors;
+        chart.update();
+    }
+
+</script>
+
+</body>
+</html>

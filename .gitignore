@@ -1,2 +1,4 @@
 .idea/
 app/vendor
+app/public/images/*
+#app/public/charts/    - once the charts.js file is available from another routes or sources

@@ -1,0 +1,11 @@
+{
+  "results11" : {
+    "title" : ["QueryBuildInserts"],
+    "metric" : ["Avg Execution time"],
+    "benchmarks" : [
+      {"method" : "md5", "result" :  0.007},
+      {"method" : "sha1", "result" :  0.006},
+      {"method" : "sha2", "result" :  0.010},
+      {"method" : "sha3", "result" :  0.016}]
+  }
+}
