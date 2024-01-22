@@ -48,7 +48,7 @@ abstract class AbstractCommand extends Command
     protected function configure(): void {
         $this
             ->addOption(self::ITERATIONS_OPTION, 'i',  InputArgument::OPTIONAL, 'number of iterations to perform the benchmarks')
-            ->addOPTion(self::GENERATE_IMAGE_OPTION, 'img', InputArgument::OPTIONAL, 'export the result to image');
+            ->addOption(self::GENERATE_IMAGE_OPTION, null, InputArgument::OPTIONAL, 'export the result to image');
     }
 
     protected function outputResults(OutputInterface $output): void {
@@ -58,6 +58,11 @@ abstract class AbstractCommand extends Command
         $this->prepareAndRenderTableResults($output);
 
         if ($this->getBenchmark()->getOutputToImage()) {
+
+            if (!file_exists(self::IMAGES_FOLDER)){
+                mkdir(self::IMAGES_FOLDER);
+            }
+
             try {
                 $this->generateImage($this->getOutputResultsAsString());
                 $output->writeln("Result was generated in image");

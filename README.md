@@ -11,7 +11,7 @@ The tool uses php 8.1, docker containers, pgsql database, included DBAL and ORM 
 
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Custom benchmarks](#Create new Benchmark Class)
+- [Custom benchmarks](#customization)
 
 ## Installation
 
@@ -57,7 +57,7 @@ sh chiron.sh init
 If you need to change the database configuration for this project, you can do so by modifying the constants in the `app/DatabaseConfiguration.php` file. The file contains the following constants related to the database connection:
 
 ```php
-    const HOST                = '192.168.99.106';
+    const HOST                = '192.168.99.106'; //change it to localhost
     const USER                = 'user';
     const PASSWORD            = 'password';
     const DATABASE            = 'dbal_benchmarks';
@@ -68,7 +68,7 @@ If you need to change the database configuration for this project, you can do so
     const CODE_IGNITER_DRIVER = 'Postgre';
 ```
 
-## Create new Benchmark Class 
+## Customization
 
 ### Hash Algorithm Benchmarks example
 
@@ -140,7 +140,7 @@ Within the `execute` method, use the `addMethod` function to add benchmarks for 
     php cli.php hashAlgorithm
     ```
    
-   optionally you may add -img option to generate the result to an image - all the images are stored in the public/images folder
+   optionally you may add `--image true` option to generate the result to an image - all the images are stored in the public/images folder
 
     This will execute the benchmark for the specified hash algorithms and provide performance insights.
     
