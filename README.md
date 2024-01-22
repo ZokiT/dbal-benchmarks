@@ -139,6 +139,8 @@ Within the `execute` method, use the `addMethod` function to add benchmarks for 
     ```bash
     php cli.php hashAlgorithm
     ```
+   
+   optionally you may add -img option to generate the result to an image - all the images are stored in the public/images folder
 
     This will execute the benchmark for the specified hash algorithms and provide performance insights.
     
