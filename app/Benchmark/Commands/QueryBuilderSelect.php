@@ -15,16 +15,16 @@ use App\symfony\DoctrineQueryBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class QueryBuilderInsert extends AbstractCommand
+class QueryBuilderSelect extends AbstractCommand
 {
 
     protected function configure(): void
     {
         parent::configure();
         $this
-            ->setName('queryBuilderInserts')
-            ->setDescription('Benchmark the inserts of query builders libraries.')
-            ->setHelp('this command will provide a table output of the performance of query builder inserts in to the database')
+            ->setName('queryBuilderSelect')
+            ->setDescription('Benchmark the select of query builders libraries.')
+            ->setHelp('this command will provide a table output of the performance of query builder select from the database')
         ;
     }
 
@@ -32,32 +32,32 @@ class QueryBuilderInsert extends AbstractCommand
     {
 
         $this->getBenchmark()->addMethod(
-            'doctrine query builder insert',
-            [DoctrineQueryBuilder::class, 'insert'],
+            'doctrine',
+            [DoctrineQueryBuilder::class, 'select'],
             [DoctrineQueryBuilderConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(
-            'eloquent query builder insert',
-            [EloquentQueryBuilder::class, 'insert'],
+            'eloquent',
+            [EloquentQueryBuilder::class, 'select'],
             [EloquentQueryBuilderConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(
-            'pdo insert',
-            [PDOQueries::class, 'insert'],
+            'pdo',
+            [PDOQueries::class, 'select'],
             [PDOConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(
-            'laminas insert',
-            [LaminasQueryBuilder::class, 'insert'],
+            'laminas',
+            [LaminasQueryBuilder::class, 'select'],
             [LaminasQueryBuilderConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(
-            'codeIgniter insert',
-            [CodeIgniterQueryBuilder::class, 'insert'],
+            'codeIgniter',
+            [CodeIgniterQueryBuilder::class, 'select'],
             [CodeIgniterConnection::class, 'connect']
         );
 

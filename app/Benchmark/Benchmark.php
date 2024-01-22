@@ -101,10 +101,10 @@ class Benchmark
         $this->iterations = $n > 0 ? $n : self::DEFAULT_ITERATIONS;
     }
 
-    private function addResult(string $methodName, float $averageExecutionTime, float $averageMemoryUsage, int $param, int $miss)
+    private function addResult(string $methodName, float $averageExecutionTime, float $averageMemoryUsage, int $hits, int $miss)
     {
         $this->results[$methodName] = [
-            $methodName, $averageExecutionTime, $averageMemoryUsage, $param, $miss
+            $methodName, $averageExecutionTime, $averageMemoryUsage, $hits, $miss
         ];
     }
 

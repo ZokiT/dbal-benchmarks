@@ -5,6 +5,7 @@ use App\Benchmark\Benchmark;
 use App\Benchmark\Commands\HashAlgorithm;
 use App\Benchmark\Commands\ORMInsert;
 use App\Benchmark\Commands\QueryBuilderInsert;
+use App\Benchmark\Commands\QueryBuilderSelect;
 use Symfony\Component\Console\Application;
 
 try {
@@ -14,6 +15,7 @@ try {
 
     $application->add(new QueryBuilderInsert($benchmark));
     $application->add(new ORMInsert($benchmark));
+    $application->add(new QueryBuilderSelect($benchmark));
 
     // register other commands here
     $application->add(new HashAlgorithm($benchmark));

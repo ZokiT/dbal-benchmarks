@@ -70,7 +70,7 @@ abstract class AbstractCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->getBenchmark()->setIterations((int)$input->getOption(self::ITERATIONS_OPTION));
-        $this->getBenchmark()->setOutputToImage((boolean)$input->getOption(self::ITERATIONS_OPTION));
+        $this->getBenchmark()->setOutputToImage((boolean)$input->getOption(self::GENERATE_IMAGE_OPTION));
 
         $this->getBenchmark()->run($output);
         $this->outputResults($output);
