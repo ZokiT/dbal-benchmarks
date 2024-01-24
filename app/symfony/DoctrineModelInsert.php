@@ -13,7 +13,7 @@ class DoctrineModelInsert
      */
     public static function insert(EntityManager $em): void {
         // Create a new user
-        $user = new User(...User::fake(false));
+        $user = new User(...User::fakeWithId());
 
         $em->persist($user);
         $em->flush();

@@ -7,8 +7,8 @@
     <script src="charts/chart.js"></script>
     <style>
         canvas {
-            max-width: 300px;
-            max-height: 400px;
+            max-width: 700px;
+            max-height: 600px;
             float: left;
             padding-left: 60px;
         }
@@ -25,252 +25,506 @@
 </head>
 <body>
 
-<div class="container">
-
-    <div class="chart-container">
-        <canvas id="chart1-1" width="300" height="300"></canvas>
-        <canvas id="chart1-2" width="300" height="300"></canvas>
-    </div>
-
-
-
-    <div class="chart-container">
-        <canvas id="chart2" width="300" height="300"></canvas>
-    </div>
-
-</div>
+<div class="container" id="container"></div>
 
 <script>
     // Fetching JSON data from a file
-    var data11 = {};
-    fetch('/charts/test.json')
-        .then(response => response.json())
-        .then(jsonData => {
-            // Manipulating the HTML with the fetched JSON data
-            // Data from your table
-            let arrayDataset = [];
-            jsonData.results11.benchmarks.map( (benchmark) => {
-                arrayDataset.push({
-                    label: benchmark.method,
-                    data: [benchmark.result],
-                    borderWidth: 2
-                })}
-            );
+    let files = [
+        'queryBuilderSelect.json',
+        'queryBuilderInserts.json',
+        'ORMInserts.json'
+    ];
 
-            data11 = {
-                labels: jsonData.results11.title,
-                datasets: arrayDataset
+    files.forEach(filename => {
+        fetch('/charts/' + filename)
+            .then(response => response.json())
+            .then(jsonData => {
+
+                if (jsonData.length === 1) {
+
+                    // Create a new chart container div
+                    const chartContainer1 = document.createElement('div');
+                    chartContainer1.className = 'chart-container';
+
+                    // Create a canvas element for the chart
+                    const canvas1 = document.createElement('canvas');
+                    canvas1.id = jsonData[0].title + 1;
+                    canvas1.width = 800;
+                    canvas1.height = 800;
+
+                    // Append canvas to chart container
+                    chartContainer1.appendChild(canvas1);
+
+                    // Create a canvas element for the chart
+                    const canvas2 = document.createElement('canvas');
+                    canvas2.id = jsonData[0].title + 2;
+                    canvas2.width = 800;
+                    canvas2.height = 800;
+
+                    // Append canvas to chart container
+                    chartContainer1.appendChild(canvas2);
+
+                    // Append chart container to the main container
+                    document.getElementById('container').appendChild(chartContainer1);
+
+                    let arrayDataset1 = [];
+                    let arrayDataset2 = [];
+                    for (const [key, value] of Object.entries(jsonData[0].result)) {
+                        let methodName = value.shift()
+                        arrayDataset1.push({
+                            label: methodName,
+                            data: [value.shift()],
+                            borderWidth: 2
+                        });
+                        arrayDataset2.push({
+                            label: methodName,
+                            data: [value.shift()],
+                            borderWidth: 2
+                        });
+                    }
+
+                    data11 = {
+                        labels: ['Avg. Execution Time (ms)'],
+                        datasets: arrayDataset1
+                    };
+
+                    data12 = {
+                        labels: ['Memory Usage (KB)'],
+                        datasets: arrayDataset2
+                    }
+
+                    const options11 = {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: jsonData[0].title
+                            },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: Math.round,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                display: true  // Ensure datalabels are displayed
+                            }
+                        },
+                        scales: {
+                            x: {
+                                barPercentage: 0.6 // Adjust this value to control the width of the bars
+                            }
+                        }
+                    };
+
+                    const ctx11 = document.getElementById(jsonData[0].title + 1).getContext('2d');
+                    const myChart11 = new Chart(ctx11, {
+                        type: 'bar',
+                        data: data11,
+                        options: options11
+                    });
+
+                    const ctx12 = document.getElementById(jsonData[0].title + 2).getContext('2d');
+                    const myChart12 = new Chart(ctx12, {
+                        type: 'bar',
+                        data: data12,
+                        options: options11
+                    });
+
+                }
+                else {
+                    jsonData.sort((a,b) => (a.iterations > b.iterations) ? 1 : ((b.iterations > a.iterations) ? -1 : 0));
+
+                    const labels = [];
+                    const datasets = [];
+                    const datasets2 = [];
+                    let title = '';
+
+                    jsonData.forEach(result => {
+
+                        if (title === '') {
+                            title = result.title;
+                        }
+
+                        labels.push(result.iterations);
+                        for (const [key, value] of Object.entries(result.result)) {
+                            let methodName = value.shift();
+                            let execution = value.shift();
+                            let memory = value.shift();
+
+                            datasets.push([methodName, execution]);
+                            datasets2.push([methodName, memory]);
+                        }
+                    });
+
+                    const mappedData = {};
+                    datasets.forEach(([label, value]) => {
+                        if (!mappedData[label]) {
+                            mappedData[label] = {
+                                label: label,
+                                data: [],
+                                fill: false,
+                                tension: 0.4,
+                                cubicInterpolationMode: 'monotone'
+                            };
+                        }
+                        mappedData[label].data.push(value);
+                    });
+
+                    const mappedData2 = {};
+                    datasets2.forEach(([label, value]) => {
+                        if (!mappedData2[label]) {
+                            mappedData2[label] = {
+                                label: label,
+                                data: [],
+                                fill: false,
+                                tension: 0.4,
+                                cubicInterpolationMode: 'monotone'
+                            };
+                        }
+                        mappedData2[label].data.push(value);
+                    });
+
+                    const inter_polar_data = {
+                        labels: labels,
+                        datasets: Object.values(mappedData)
+                    };
+
+                    const inter_polar_data2 = {
+                        labels: labels,
+                        datasets: Object.values(mappedData2)
+                    };
+
+
+                    // Create a new chart container div
+                    const chartContainer1 = document.createElement('div');
+                    chartContainer1.className = 'chart-container';
+
+                    // Create a canvas element for the chart
+                    const canvas1 = document.createElement('canvas');
+                    canvas1.id = jsonData[0].title;
+                    canvas1.width = 600;
+                    canvas1.height = 600;
+
+                    // Append canvas to chart container
+                    chartContainer1.appendChild(canvas1);
+
+                    // Create a canvas element for the chart
+                    const canvas2 = document.createElement('canvas');
+                    canvas2.id = jsonData[0].title + 2;
+                    canvas2.width = 600;
+                    canvas2.height = 600;
+
+                    // Append canvas to chart container
+                    chartContainer1.appendChild(canvas2);
+
+                    // Append chart container to the main container
+                    document.getElementById('container').appendChild(chartContainer1);
+
+                    const interpolar_config = {
+                        type: 'line',
+                        data: inter_polar_data,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: title
+                                },
+                            },
+                            interaction: {
+                                intersect: false,
+                            },
+                            scales: {
+                                x: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Iterations'
+                                    }
+                                },
+                                y: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Avg. Execution Time (ms)'
+                                    }
+                                }
+                            }
+                        },
+                    };
+
+                    const interpolar_config2 = {
+                        type: 'line',
+                        data: inter_polar_data2,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: title
+                                },
+                            },
+                            interaction: {
+                                intersect: false,
+                            },
+                            scales: {
+                                x: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Iterations'
+                                    }
+                                },
+                                y: {
+                                    display: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Memory Usage (KB)'
+                                    }
+                                }
+                            }
+                        },
+                    };
+
+                    var ctx_interpolation = document.getElementById(title).getContext('2d');
+                    var interpolar_chart = new Chart(ctx_interpolation, interpolar_config);
+
+                    var ctx_interpolation2 = document.getElementById(title + 2).getContext('2d');
+                    var interpolar_chart2 = new Chart(ctx_interpolation2, interpolar_config2);
+                }
+            })
+            .catch(error => console.error('Error fetching JSON:', error));
+    });
+
+</script>
+
+<script>
+    function fetchAndRenderChart(filename) {
+        fetch('/charts/' + filename)
+            .then(response => response.json())
+            .then(jsonData => renderCharts(jsonData))
+            .catch(error => console.error('Error fetching JSON:', error));
+    }
+
+    function createChartContainer() {
+        const chartContainer = document.createElement('div');
+        chartContainer.className = 'chart-container';
+        return chartContainer;
+    }
+
+    function createCanvas(id, width, height) {
+        const canvas = document.createElement('canvas');
+        canvas.id = id;
+        canvas.width = width;
+        canvas.height = height;
+        return canvas;
+    }
+
+    function renderCharts(jsonData) {
+
+        if (jsonData.length === 1) {
+
+            jsonData.forEach(result => {
+                // Create a new chart container div
+                const chartContainer = createChartContainer();
+
+                // Create a canvas element for the chart
+                const canvas1 = createCanvas(result.title + '1', 800, 800);
+                const canvas2 = createCanvas(result.title + '2', 800, 800);
+
+                // Append canvases to chart container
+                chartContainer.appendChild(canvas1);
+                chartContainer.appendChild(canvas2);
+
+                // Append chart container to the main container
+                document.getElementById('container').appendChild(chartContainer);
+
+                const datasets1 = [];
+                const datasets2 = [];
+
+                for (const [key, value] of Object.entries(result.result)) {
+                    const methodName = value.shift();
+                    const execution = value.shift();
+                    const memory = value.shift();
+
+                    datasets1.push({
+                        label: methodName,
+                        data: [execution],
+                        borderWidth: 2
+                    });
+
+                    datasets2.push({
+                        label: methodName,
+                        data: [memory],
+                        borderWidth: 2
+                    });
+                }
+
+                const data1 = {
+                    labels: ['Avg. Execution Time (ms)'],
+                    datasets: datasets1
+                };
+
+                const data2 = {
+                    labels: ['Memory Usage (KB)'],
+                    datasets: datasets2
+                };
+
+                const options = {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: result.title
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: Math.round,
+                            font: {
+                                weight: 'bold'
+                            },
+                            display: true
+                        }
+                    },
+                    scales: {
+                        x: {
+                            barPercentage: 0.6
+                        }
+                    }
+                };
+
+                const ctx1 = document.getElementById(result.title + '1').getContext('2d');
+                const myChart1 = new Chart(ctx1, {
+                    type: 'bar',
+                    data: data1,
+                    options: options
+                });
+
+                const ctx2 = document.getElementById(result.title + '2').getContext('2d');
+                const myChart2 = new Chart(ctx2, {
+                    type: 'bar',
+                    data: data2,
+                    options: options
+                });
+            });
+
+        }
+        else {
+            jsonData.sort((a, b) => a.iterations - b.iterations);
+
+            const title = jsonData[0].title; // Assuming all iterations share the same title
+
+            const chartContainer = createChartContainer();
+
+            const canvas1 = createCanvas(title + '1', 600, 600);
+            const canvas2 = createCanvas(title + '2', 600, 600);
+
+            chartContainer.appendChild(canvas1);
+            chartContainer.appendChild(canvas2);
+
+            document.getElementById('container').appendChild(chartContainer);
+
+            const datasets = [];
+            const datasets2 = [];
+            const labels = jsonData.map(result => result.iterations);
+
+            jsonData.forEach(result => {
+                Object.entries(result.result).forEach(([key, value]) => {
+                    const methodName = value.shift();
+                    const execution = value.shift();
+                    const memory = value.shift();
+
+                    const dataset = datasets.find(dataset => dataset.label === methodName) || {
+                        label: methodName,
+                        data: [],
+                        fill: false,
+                        tension: 0.4,
+                        cubicInterpolationMode: 'monotone'
+                    };
+
+                    const dataset2 = datasets2.find(dataset => dataset.label === methodName) || {
+                        label: methodName,
+                        data: [],
+                        fill: false,
+                        tension: 0.4,
+                        cubicInterpolationMode: 'monotone'
+                    };
+
+                    dataset.data.push(execution);
+                    dataset2.data.push(memory);
+
+                    if (!datasets.includes(dataset)) {
+                        datasets.push(dataset);
+                    }
+
+                    if (!datasets2.includes(dataset2)) {
+                        datasets2.push(dataset2);
+                    }
+                });
+            });
+
+            const interPolarData = {
+                labels: labels,
+                datasets: datasets
             };
 
-            var options11 = {
+            const interPolarData2 = {
+                labels: labels,
+                datasets: datasets2
+            };
+
+            const options = {
+                responsive: true,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Custom Chart Title'
+                        text: title
                     },
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'top',
-                        formatter: Math.round,
-                        font: {
-                            weight: 'bold'
-                        },
-                        display: true  // Ensure datalabels are displayed
-                    }
+                },
+                interaction: {
+                    intersect: false,
                 },
                 scales: {
                     x: {
-                        barPercentage: 0.6 // Adjust this value to control the width of the bars
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Iterations'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Avg. Execution Time (ms)'
+                        }
                     }
                 }
             };
 
-            // Create the bar chart
-            var ctx11 = document.getElementById('chart1-1').getContext('2d');
-            var myChart11 = new Chart(ctx11, {
-                type: 'bar',
-                data: data11,
-                options: options11
+            const ctxInterpolation = document.getElementById(title + '1').getContext('2d');
+            const interpolarChart = new Chart(ctxInterpolation, {
+                type: 'line',
+                data: interPolarData,
+                options: options,
             });
-        })
-        .catch(error => console.error('Error fetching JSON:', error));
 
-    // Data from your table
-    var data12 = {
-        labels: ['Memory'],
-        datasets: [
-            {
-                label: 'md5',
-                data: [0.120],
-                borderWidth: 2
-            },
-            {
-                label: 'sha1',
-                data: [0.150],
-                borderWidth: 2
-            },
-            {
-                label: 'sha2',
-                data: [0.050],
-                borderWidth: 2
-            },
-            {
-                label: 'sha3',
-                data: [0.080],
-                borderWidth: 2
-            }
-        ]
-    };
-
-    var options12 = {
-        plugins: {
-            title: {
-                display: true,
-                text: 'Custom Chart Title'
-            },
-            datalabels: {
-                anchor: 'end',
-                align: 'top',
-                formatter: Math.round,
-                font: {
-                    weight: 'bold'
-                },
-                display: true  // Ensure datalabels are displayed
-            }
-        },
-        scales: {
-            x: {
-                barPercentage: 0.6 // Adjust this value to control the width of the bars
-            }
-        },
-        showTooltips: false,
-        onAnimationComplete: function () {
-            var ctx = this.chart.ctx;
-            ctx.font = this.scale.font;
-            ctx.fillStyle = this.scale.textColor
-            ctx.textAlign = "center";
-            ctx.textBaseline = "bottom";
-
-            this.datasets.forEach(function (dataset) {
-                dataset.bars.forEach(function (bar) {
-                    ctx.fillText(bar.value, bar.x, bar.y - 5);
-                });
-            })
+            const ctxInterpolation2 = document.getElementById(title + '2').getContext('2d');
+            const interpolarChart2 = new Chart(ctxInterpolation2, {
+                type: 'line',
+                data: interPolarData2,
+                options: options,
+            });
         }
-    };
-
-    // Create the bar chart with datalabels
-    var ctx12 = document.getElementById('chart1-2').getContext('2d');
-    var myChart12 = new Chart(ctx12, {
-        type: 'bar',
-        data: data12,
-        options: options12
-    });
-
-    /// Code for the different way of shown results
-    var data2 = {
-        labels: ['md5', 'sha1', 'sha2', 'sha3'],
-        datasets: [
-            {
-                label: 'Avg Execution time',
-                data: [0.007, 0.006, 0.015, 0.010],
-                borderWidth: 2,
-            },
-            {
-                label: 'memory consumption',
-                data: [0.10, 0.20, 0.15, 0.50],
-                borderWidth: 2
-            }
-        ]
-    };
-
-    var options2 = {
-        plugins: {
-            title: {
-                display: true,
-                text: 'Custom Chart Title'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function (context) {
-                        var label = context.dataset.label || '';
-                        return label + ': ' + context.parsed.y;
-                    }
-                }
-            },
-        },
-        scales: {
-            x: {
-                barPercentage: 0.6 // Adjust this value to control the width of the bars
-            }
-        },
-        onHover: function (event, chartElement) {
-            document.getElementById('chart2').style.cursor = chartElement[0] ? 'pointer' : 'default';
-        },
-        animation: {
-            onComplete: function () {
-                var chart = this;
-                var ctx = chart.ctx;
-
-                chart.data.datasets.forEach(function (dataset, datasetIndex) {
-                    var meta = chart.getDatasetMeta(datasetIndex);
-
-                    meta.data.forEach(function (bar, index) {
-                        var data = dataset.data[index];
-
-                        if (data !== 0 && dataset.hidden !== true) {
-                            var label = data.toFixed(3);
-                            var textWidth = ctx.measureText(label).width;
-
-                            ctx.fillStyle = 'black';
-                            ctx.fillText(label, bar.x - textWidth / 2, bar.y - 5);
-                        }
-                    });
-                });
-            }
-        },
-        legend: {
-            onClick: function (e, legendItem) {
-                var index = legendItem.datasetIndex;
-                var chart = this.chart;
-
-                chart.getDatasetMeta(index).hidden = chart.getDatasetMeta(index).hidden === null ? !chart.data.datasets[index].hidden : null;
-
-                chart.update();
-            }
-        }
-    };
-
-    // Create the bar chart
-    const ctx2 = document.getElementById('chart2').getContext('2d');
-    var myChart = new Chart(ctx2, {
-        type: 'bar',
-        data: data2,
-        options: options2
-    });
-
-    // Add click event listener for highlighting minimum values
-    document.getElementById('chart2').addEventListener('click', function (event) {
-        var activePoints = myChart.getElementsAtEvent(event);
-        if (activePoints.length > 0) {
-            var minIndex = findMinIndex(myChart, activePoints[0].datasetIndex);
-            highlightMinValue(myChart, activePoints[0].datasetIndex, minIndex);
-        }
-    });
-
-    // Function to find the index of the minimum value in the dataset
-    function findMinIndex(chart, datasetIndex) {
-        var minValue = Math.min.apply(null, chart.data.datasets[datasetIndex].data);
-        return chart.data.datasets[datasetIndex].data.indexOf(minValue);
     }
 
-    // Function to highlight the minimum value in the dataset
-    function highlightMinValue(chart, datasetIndex, index) {
-        var backgroundColors = chart.data.datasets[datasetIndex].backgroundColor.slice();
-        backgroundColors[index] = 'rgba(255, 0, 0, 0.6)';
-        chart.data.datasets[datasetIndex].backgroundColor = backgroundColors;
-        chart.update();
-    }
+    const files = [
+        'queryBuilderSelect.json',
+        'queryBuilderInserts.json',
+        'ORMInserts.json'
+    ];
+
+    files.forEach(filename => fetchAndRenderChart(filename));
 
 </script>
 

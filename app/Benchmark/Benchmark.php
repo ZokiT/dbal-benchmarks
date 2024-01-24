@@ -17,12 +17,13 @@ class Benchmark
         'Method',
         'Avg. Execution Time (ms)',
         'Memory Usage (KB)',
-        'Hits',
+        'Iterations',
         'Misses'
     ];
 
-    private array $results = [];
+    private array $results      = [];
     private bool $outputToImage = false;
+    private bool $storeToFile   = false;
 
     public function addMethod($methodName, $callback, $setUpCallback = null, $handleException = null) {
         $this->methods[$methodName] = [
@@ -82,7 +83,7 @@ class Benchmark
                 $methodName,
                 $averageExecutionTime,
                 $memoryUsage,
-                $this->getIterations() - $miss,
+                $this->getIterations(),
                 $miss
             );
 
@@ -91,7 +92,7 @@ class Benchmark
         }
     }
 
-    private function getIterations(): int
+    public function getIterations(): int
     {
         return $this->iterations;
     }
@@ -121,5 +122,15 @@ class Benchmark
     public function getOutputToImage(): bool
     {
         return $this->outputToImage;
+    }
+
+    public function setStoreToFile(bool $storeToFile)
+    {
+        $this->storeToFile = $storeToFile;
+    }
+
+    public function getStoreToFile(): bool
+    {
+        return $this->storeToFile;
     }
 }

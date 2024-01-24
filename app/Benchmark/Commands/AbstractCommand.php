@@ -10,8 +10,8 @@ use ImagickPixel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
@@ -19,8 +19,9 @@ use Throwable;
 abstract class AbstractCommand extends Command
 {
 
-    const ITERATIONS_OPTION     = 'numberOfIterations';
-    const GENERATE_IMAGE_OPTION = 'image';
+    const ITERATIONS_OPTION = 'iterations';
+    const IMAGE_OPTION      = 'image';
+    const CHART_OPTION      = 'graph';
 
 
     const FONTS_FOLDER = './public/fonts/monospace.ttf';
@@ -47,8 +48,9 @@ abstract class AbstractCommand extends Command
 
     protected function configure(): void {
         $this
-            ->addOption(self::ITERATIONS_OPTION, 'i',  InputArgument::OPTIONAL, 'number of iterations to perform the benchmarks')
-            ->addOption(self::GENERATE_IMAGE_OPTION, null, InputArgument::OPTIONAL, 'export the result to image');
+            ->addOption(self::ITERATIONS_OPTION, 'i',  InputOption::VALUE_OPTIONAL, 'number of iterations to perform the benchmarks')
+            ->addOption(self::IMAGE_OPTION, 'img', InputOption::VALUE_NEGATABLE, 'export the result to image')
+            ->addOption(self::CHART_OPTION, 'c', InputOption::VALUE_NEGATABLE, 'store the results in local file for graph usage');
     }
 
     protected function outputResults(OutputInterface $output): void {
@@ -56,6 +58,36 @@ abstract class AbstractCommand extends Command
         //TODO store the result to local file for graph UI
 
         $this->prepareAndRenderTableResults($output);
+
+        if ($this->getBenchmark()->getStoreToFile()) {
+
+            if (!file_exists(self::CHARTS_FOLDER)){
+                mkdir(self::CHARTS_FOLDER);
+            }
+
+            $filePath = self::CHARTS_FOLDER . "/{$this->getName()}.json";
+            if (file_exists($filePath)) {
+                $fileContent = file_get_contents($filePath);
+                $fileContent = json_encode(array_merge(
+                    [[
+                        "result" => $this->getBenchmark()->getResults(),
+                        "iterations" => $this->getBenchmark()->getIterations(),
+                        "title" => $this->getName()
+                    ]],
+                    json_decode($fileContent, true))
+                );
+                unlink($filePath);
+                file_put_contents($filePath, $fileContent);
+            } else {
+                file_put_contents($filePath, json_encode(
+                    [[
+                        "result" => $this->getBenchmark()->getResults(),
+                        "iterations" => $this->getBenchmark()->getIterations(),
+                        "title" => $this->getName()
+                    ]]
+                ));
+            }
+        }
 
         if ($this->getBenchmark()->getOutputToImage()) {
 
@@ -75,7 +107,8 @@ abstract class AbstractCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->getBenchmark()->setIterations((int)$input->getOption(self::ITERATIONS_OPTION));
-        $this->getBenchmark()->setOutputToImage((boolean)$input->getOption(self::GENERATE_IMAGE_OPTION));
+        $this->getBenchmark()->setOutputToImage($input->getOption(self::IMAGE_OPTION) ?? false);
+        $this->getBenchmark()->setStoreToFile($input->getOption(self::CHART_OPTION) ?? false);
 
         $this->getBenchmark()->run($output);
         $this->outputResults($output);

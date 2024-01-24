@@ -12,7 +12,7 @@ class LaminasModelInsert
 
         $hydrator = new ClassMethodsHydrator();
         // Hydrate a User object with data
-        $user = $hydrator->hydrate(User::fake(false), new User());
+        $user = $hydrator->hydrate(User::fake(), new User());
 
         // Build the SQL insert statement
         $insert = $sql->insert('users');
