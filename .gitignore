@@ -3,5 +3,4 @@ app/vendor
 app/public/images/*
 app/public/charts/*
 !app/public/charts/chart.js
-# example how it may be done
-!app/public/charts/test.json
+app/symfony/cache

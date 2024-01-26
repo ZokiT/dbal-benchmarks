@@ -2,40 +2,172 @@
 
 namespace App\symfony\Models;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="orders")
- */
+use DateTime;
+use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: "orders")]
 class Order
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(name="order_id", type="integer")
-     */
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\Column(name: "order_id", type: "bigint", nullable: false)]
+    protected ?int $id = null;
+
+    #[ORM\ManyToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "user_id", nullable: false, onDelete: "SET NULL")]
+    protected User $user;
+
+    #[ORM\Column(name: "order_date", type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
+    protected DateTimeInterface $orderDate;
+
+    #[ORM\Column(name: "status", type: "string", length: 255)]
+    protected string $status;
+
+    #[ORM\Column(name: "total_amount", type: "float", options: ["default" => 0])]
+    protected float $totalAmount;
+
+    #[ORM\Column(name: "shipping_information", type: "string", length: 255, options: ["default" => ""])]
+    protected string $shippingInformation;
+
+    #[ORM\Column(name: "created_at", type: "datetime")]
+    protected DateTimeInterface $createdAt;
+
+    #[ORM\Column(name: "updated_at", type: "datetime")]
+    protected DateTimeInterface $updatedAt;
+
+    public function __construct(
+        User $user,
+        DateTimeInterface $orderDate,
+        string $status,
+        float $totalAmount = 0,
+        string $shippingInformation = ''
+    ) {
+        $this->user = $user;
+        $this->orderDate = $orderDate;
+        $this->status = $status;
+        $this->totalAmount = $totalAmount;
+        $this->shippingInformation = $shippingInformation;
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
+    }
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="orders")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @return int|null
      */
-    protected $user;
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     /**
-     * @ORM\OneToMany(targetEntity="OrderDetails", mappedBy="order")
+     * @param int|null $id
      */
-    protected $orderDetails;
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function getOrderDate(): DateTimeInterface
+    {
+        return $this->orderDate;
+    }
+
+    public function setOrderDate(DateTimeInterface $orderDate): DateTimeInterface
+    {
+        $this->orderDate = $orderDate;
+    }
 
     /**
-     * @ORM\OneToOne(targetEntity="Payment", mappedBy="order")
+     * @return string
      */
-    protected $payment;
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
 
     /**
-     * @ORM\OneToOne(targetEntity="Address", mappedBy="order")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @param string $status
      */
-    protected $shippingAddress;
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
 
-    // Constructor, getters, setters, and other methods...
+    /**
+     * @return float|int
+     */
+    public function getTotalAmount(): float|int
+    {
+        return $this->totalAmount;
+    }
+
+    /**
+     * @param float|int $totalAmount
+     */
+    public function setTotalAmount(float|int $totalAmount): void
+    {
+        $this->totalAmount = $totalAmount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShippingInformation(): string
+    {
+        return $this->shippingInformation;
+    }
+
+    /**
+     * @param string $shippingInformation
+     */
+    public function setShippingInformation(string $shippingInformation): void
+    {
+        $this->shippingInformation = $shippingInformation;
+    }
+
+    /**
+     * @return DateTimeInterface
+     */
+    public function getCreatedAt(): DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param DateTimeInterface $createdAt
+     */
+    public function setCreatedAt(DateTimeInterface $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return DateTimeInterface
+     */
+    public function getUpdatedAt(): DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param DateTimeInterface $updatedAt
+     */
+    public function setUpdatedAt(DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+
 }

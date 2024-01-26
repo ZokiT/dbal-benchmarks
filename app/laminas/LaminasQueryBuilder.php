@@ -19,7 +19,7 @@ class LaminasQueryBuilder
             $select->limit(1);
         });
 
-        // the result is Traversable, Countable object so we need to actualy get them
+        // the result is Traversable, Countable object, so we need to actually get them
         $rowSet->current();
     }
 }

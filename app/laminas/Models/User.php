@@ -2,9 +2,6 @@
 
 namespace App\laminas\Models;
 
-
-use DateTimeInterface;
-
 class User
 {
     use \App\User;
@@ -26,6 +23,10 @@ class User
     protected array $orders;
 
     protected array $addresses;
+
+//    public function __construct($email) {
+//        $this->email = $email;
+//    }
 
     /**
      * @return string
@@ -84,11 +85,11 @@ class User
     }
 
     /**
-     * @param bool $is_active
+     * @param string $is_active
      */
-    public function setIsActive(bool $is_active): void
+    public function setIsActive(string $is_active): void
     {
-        $this->isActive = $is_active;
+        $this->isActive = $is_active === 't';
     }
 
     /**

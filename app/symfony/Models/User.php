@@ -3,6 +3,7 @@
 namespace App\symfony\Models;
 
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -45,10 +46,10 @@ class User
     protected DateTimeInterface $updatedAt;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class)]
-    protected array $orders;
+    protected Collection $orders;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class)]
-    protected array $addresses;
+    protected Collection $addresses;
 
     /**
      * @param string $username

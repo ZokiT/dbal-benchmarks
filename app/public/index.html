@@ -27,276 +27,276 @@
 
 <div class="container" id="container"></div>
 
-<script>
-    // Fetching JSON data from a file
-    let files = [
-        'queryBuilderSelect.json',
-        'queryBuilderInserts.json',
-        'ORMInserts.json'
-    ];
+<!--<script>-->
+<!--    // Fetching JSON data from a file-->
+<!--    let files = [-->
+<!--        'queryBuilderSelect.json',-->
+<!--        'queryBuilderInserts.json',-->
+<!--        'ORMInserts.json'-->
+<!--    ];-->
 
-    files.forEach(filename => {
-        fetch('/charts/' + filename)
-            .then(response => response.json())
-            .then(jsonData => {
+<!--    files.forEach(filename => {-->
+<!--        fetch('/charts/' + filename)-->
+<!--            .then(response => response.json())-->
+<!--            .then(jsonData => {-->
 
-                if (jsonData.length === 1) {
+<!--                if (jsonData.length === 1) {-->
 
-                    // Create a new chart container div
-                    const chartContainer1 = document.createElement('div');
-                    chartContainer1.className = 'chart-container';
+<!--                    // Create a new chart container div-->
+<!--                    const chartContainer1 = document.createElement('div');-->
+<!--                    chartContainer1.className = 'chart-container';-->
 
-                    // Create a canvas element for the chart
-                    const canvas1 = document.createElement('canvas');
-                    canvas1.id = jsonData[0].title + 1;
-                    canvas1.width = 800;
-                    canvas1.height = 800;
+<!--                    // Create a canvas element for the chart-->
+<!--                    const canvas1 = document.createElement('canvas');-->
+<!--                    canvas1.id = jsonData[0].title + 1;-->
+<!--                    canvas1.width = 800;-->
+<!--                    canvas1.height = 800;-->
 
-                    // Append canvas to chart container
-                    chartContainer1.appendChild(canvas1);
+<!--                    // Append canvas to chart container-->
+<!--                    chartContainer1.appendChild(canvas1);-->
 
-                    // Create a canvas element for the chart
-                    const canvas2 = document.createElement('canvas');
-                    canvas2.id = jsonData[0].title + 2;
-                    canvas2.width = 800;
-                    canvas2.height = 800;
+<!--                    // Create a canvas element for the chart-->
+<!--                    const canvas2 = document.createElement('canvas');-->
+<!--                    canvas2.id = jsonData[0].title + 2;-->
+<!--                    canvas2.width = 800;-->
+<!--                    canvas2.height = 800;-->
 
-                    // Append canvas to chart container
-                    chartContainer1.appendChild(canvas2);
+<!--                    // Append canvas to chart container-->
+<!--                    chartContainer1.appendChild(canvas2);-->
 
-                    // Append chart container to the main container
-                    document.getElementById('container').appendChild(chartContainer1);
+<!--                    // Append chart container to the main container-->
+<!--                    document.getElementById('container').appendChild(chartContainer1);-->
 
-                    let arrayDataset1 = [];
-                    let arrayDataset2 = [];
-                    for (const [key, value] of Object.entries(jsonData[0].result)) {
-                        let methodName = value.shift()
-                        arrayDataset1.push({
-                            label: methodName,
-                            data: [value.shift()],
-                            borderWidth: 2
-                        });
-                        arrayDataset2.push({
-                            label: methodName,
-                            data: [value.shift()],
-                            borderWidth: 2
-                        });
-                    }
+<!--                    let arrayDataset1 = [];-->
+<!--                    let arrayDataset2 = [];-->
+<!--                    for (const [key, value] of Object.entries(jsonData[0].result)) {-->
+<!--                        let methodName = value.shift()-->
+<!--                        arrayDataset1.push({-->
+<!--                            label: methodName,-->
+<!--                            data: [value.shift()],-->
+<!--                            borderWidth: 2-->
+<!--                        });-->
+<!--                        arrayDataset2.push({-->
+<!--                            label: methodName,-->
+<!--                            data: [value.shift()],-->
+<!--                            borderWidth: 2-->
+<!--                        });-->
+<!--                    }-->
 
-                    data11 = {
-                        labels: ['Avg. Execution Time (ms)'],
-                        datasets: arrayDataset1
-                    };
+<!--                    data11 = {-->
+<!--                        labels: ['Avg. Execution Time (ms)'],-->
+<!--                        datasets: arrayDataset1-->
+<!--                    };-->
 
-                    data12 = {
-                        labels: ['Memory Usage (KB)'],
-                        datasets: arrayDataset2
-                    }
+<!--                    data12 = {-->
+<!--                        labels: ['Memory Usage (KB)'],-->
+<!--                        datasets: arrayDataset2-->
+<!--                    }-->
 
-                    const options11 = {
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: jsonData[0].title
-                            },
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: Math.round,
-                                font: {
-                                    weight: 'bold'
-                                },
-                                display: true  // Ensure datalabels are displayed
-                            }
-                        },
-                        scales: {
-                            x: {
-                                barPercentage: 0.6 // Adjust this value to control the width of the bars
-                            }
-                        }
-                    };
+<!--                    const options11 = {-->
+<!--                        plugins: {-->
+<!--                            title: {-->
+<!--                                display: true,-->
+<!--                                text: jsonData[0].title-->
+<!--                            },-->
+<!--                            datalabels: {-->
+<!--                                anchor: 'end',-->
+<!--                                align: 'top',-->
+<!--                                formatter: Math.round,-->
+<!--                                font: {-->
+<!--                                    weight: 'bold'-->
+<!--                                },-->
+<!--                                display: true  // Ensure datalabels are displayed-->
+<!--                            }-->
+<!--                        },-->
+<!--                        scales: {-->
+<!--                            x: {-->
+<!--                                barPercentage: 0.6 // Adjust this value to control the width of the bars-->
+<!--                            }-->
+<!--                        }-->
+<!--                    };-->
 
-                    const ctx11 = document.getElementById(jsonData[0].title + 1).getContext('2d');
-                    const myChart11 = new Chart(ctx11, {
-                        type: 'bar',
-                        data: data11,
-                        options: options11
-                    });
+<!--                    const ctx11 = document.getElementById(jsonData[0].title + 1).getContext('2d');-->
+<!--                    const myChart11 = new Chart(ctx11, {-->
+<!--                        type: 'bar',-->
+<!--                        data: data11,-->
+<!--                        options: options11-->
+<!--                    });-->
 
-                    const ctx12 = document.getElementById(jsonData[0].title + 2).getContext('2d');
-                    const myChart12 = new Chart(ctx12, {
-                        type: 'bar',
-                        data: data12,
-                        options: options11
-                    });
+<!--                    const ctx12 = document.getElementById(jsonData[0].title + 2).getContext('2d');-->
+<!--                    const myChart12 = new Chart(ctx12, {-->
+<!--                        type: 'bar',-->
+<!--                        data: data12,-->
+<!--                        options: options11-->
+<!--                    });-->
 
-                }
-                else {
-                    jsonData.sort((a,b) => (a.iterations > b.iterations) ? 1 : ((b.iterations > a.iterations) ? -1 : 0));
+<!--                }-->
+<!--                else {-->
+<!--                    jsonData.sort((a,b) => (a.iterations > b.iterations) ? 1 : ((b.iterations > a.iterations) ? -1 : 0));-->
 
-                    const labels = [];
-                    const datasets = [];
-                    const datasets2 = [];
-                    let title = '';
+<!--                    const labels = [];-->
+<!--                    const datasets = [];-->
+<!--                    const datasets2 = [];-->
+<!--                    let title = '';-->
 
-                    jsonData.forEach(result => {
+<!--                    jsonData.forEach(result => {-->
 
-                        if (title === '') {
-                            title = result.title;
-                        }
+<!--                        if (title === '') {-->
+<!--                            title = result.title;-->
+<!--                        }-->
 
-                        labels.push(result.iterations);
-                        for (const [key, value] of Object.entries(result.result)) {
-                            let methodName = value.shift();
-                            let execution = value.shift();
-                            let memory = value.shift();
+<!--                        labels.push(result.iterations);-->
+<!--                        for (const [key, value] of Object.entries(result.result)) {-->
+<!--                            let methodName = value.shift();-->
+<!--                            let execution = value.shift();-->
+<!--                            let memory = value.shift();-->
 
-                            datasets.push([methodName, execution]);
-                            datasets2.push([methodName, memory]);
-                        }
-                    });
+<!--                            datasets.push([methodName, execution]);-->
+<!--                            datasets2.push([methodName, memory]);-->
+<!--                        }-->
+<!--                    });-->
 
-                    const mappedData = {};
-                    datasets.forEach(([label, value]) => {
-                        if (!mappedData[label]) {
-                            mappedData[label] = {
-                                label: label,
-                                data: [],
-                                fill: false,
-                                tension: 0.4,
-                                cubicInterpolationMode: 'monotone'
-                            };
-                        }
-                        mappedData[label].data.push(value);
-                    });
+<!--                    const mappedData = {};-->
+<!--                    datasets.forEach(([label, value]) => {-->
+<!--                        if (!mappedData[label]) {-->
+<!--                            mappedData[label] = {-->
+<!--                                label: label,-->
+<!--                                data: [],-->
+<!--                                fill: false,-->
+<!--                                tension: 0.4,-->
+<!--                                cubicInterpolationMode: 'monotone'-->
+<!--                            };-->
+<!--                        }-->
+<!--                        mappedData[label].data.push(value);-->
+<!--                    });-->
 
-                    const mappedData2 = {};
-                    datasets2.forEach(([label, value]) => {
-                        if (!mappedData2[label]) {
-                            mappedData2[label] = {
-                                label: label,
-                                data: [],
-                                fill: false,
-                                tension: 0.4,
-                                cubicInterpolationMode: 'monotone'
-                            };
-                        }
-                        mappedData2[label].data.push(value);
-                    });
+<!--                    const mappedData2 = {};-->
+<!--                    datasets2.forEach(([label, value]) => {-->
+<!--                        if (!mappedData2[label]) {-->
+<!--                            mappedData2[label] = {-->
+<!--                                label: label,-->
+<!--                                data: [],-->
+<!--                                fill: false,-->
+<!--                                tension: 0.4,-->
+<!--                                cubicInterpolationMode: 'monotone'-->
+<!--                            };-->
+<!--                        }-->
+<!--                        mappedData2[label].data.push(value);-->
+<!--                    });-->
 
-                    const inter_polar_data = {
-                        labels: labels,
-                        datasets: Object.values(mappedData)
-                    };
+<!--                    const inter_polar_data = {-->
+<!--                        labels: labels,-->
+<!--                        datasets: Object.values(mappedData)-->
+<!--                    };-->
 
-                    const inter_polar_data2 = {
-                        labels: labels,
-                        datasets: Object.values(mappedData2)
-                    };
+<!--                    const inter_polar_data2 = {-->
+<!--                        labels: labels,-->
+<!--                        datasets: Object.values(mappedData2)-->
+<!--                    };-->
 
 
-                    // Create a new chart container div
-                    const chartContainer1 = document.createElement('div');
-                    chartContainer1.className = 'chart-container';
+<!--                    // Create a new chart container div-->
+<!--                    const chartContainer1 = document.createElement('div');-->
+<!--                    chartContainer1.className = 'chart-container';-->
 
-                    // Create a canvas element for the chart
-                    const canvas1 = document.createElement('canvas');
-                    canvas1.id = jsonData[0].title;
-                    canvas1.width = 600;
-                    canvas1.height = 600;
+<!--                    // Create a canvas element for the chart-->
+<!--                    const canvas1 = document.createElement('canvas');-->
+<!--                    canvas1.id = jsonData[0].title;-->
+<!--                    canvas1.width = 600;-->
+<!--                    canvas1.height = 600;-->
 
-                    // Append canvas to chart container
-                    chartContainer1.appendChild(canvas1);
+<!--                    // Append canvas to chart container-->
+<!--                    chartContainer1.appendChild(canvas1);-->
 
-                    // Create a canvas element for the chart
-                    const canvas2 = document.createElement('canvas');
-                    canvas2.id = jsonData[0].title + 2;
-                    canvas2.width = 600;
-                    canvas2.height = 600;
+<!--                    // Create a canvas element for the chart-->
+<!--                    const canvas2 = document.createElement('canvas');-->
+<!--                    canvas2.id = jsonData[0].title + 2;-->
+<!--                    canvas2.width = 600;-->
+<!--                    canvas2.height = 600;-->
 
-                    // Append canvas to chart container
-                    chartContainer1.appendChild(canvas2);
+<!--                    // Append canvas to chart container-->
+<!--                    chartContainer1.appendChild(canvas2);-->
 
-                    // Append chart container to the main container
-                    document.getElementById('container').appendChild(chartContainer1);
+<!--                    // Append chart container to the main container-->
+<!--                    document.getElementById('container').appendChild(chartContainer1);-->
 
-                    const interpolar_config = {
-                        type: 'line',
-                        data: inter_polar_data,
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: title
-                                },
-                            },
-                            interaction: {
-                                intersect: false,
-                            },
-                            scales: {
-                                x: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Iterations'
-                                    }
-                                },
-                                y: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Avg. Execution Time (ms)'
-                                    }
-                                }
-                            }
-                        },
-                    };
+<!--                    const interpolar_config = {-->
+<!--                        type: 'line',-->
+<!--                        data: inter_polar_data,-->
+<!--                        options: {-->
+<!--                            responsive: true,-->
+<!--                            plugins: {-->
+<!--                                title: {-->
+<!--                                    display: true,-->
+<!--                                    text: title-->
+<!--                                },-->
+<!--                            },-->
+<!--                            interaction: {-->
+<!--                                intersect: false,-->
+<!--                            },-->
+<!--                            scales: {-->
+<!--                                x: {-->
+<!--                                    display: true,-->
+<!--                                    title: {-->
+<!--                                        display: true,-->
+<!--                                        text: 'Iterations'-->
+<!--                                    }-->
+<!--                                },-->
+<!--                                y: {-->
+<!--                                    display: true,-->
+<!--                                    title: {-->
+<!--                                        display: true,-->
+<!--                                        text: 'Avg. Execution Time (ms)'-->
+<!--                                    }-->
+<!--                                }-->
+<!--                            }-->
+<!--                        },-->
+<!--                    };-->
 
-                    const interpolar_config2 = {
-                        type: 'line',
-                        data: inter_polar_data2,
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: title
-                                },
-                            },
-                            interaction: {
-                                intersect: false,
-                            },
-                            scales: {
-                                x: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Iterations'
-                                    }
-                                },
-                                y: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Memory Usage (KB)'
-                                    }
-                                }
-                            }
-                        },
-                    };
+<!--                    const interpolar_config2 = {-->
+<!--                        type: 'line',-->
+<!--                        data: inter_polar_data2,-->
+<!--                        options: {-->
+<!--                            responsive: true,-->
+<!--                            plugins: {-->
+<!--                                title: {-->
+<!--                                    display: true,-->
+<!--                                    text: title-->
+<!--                                },-->
+<!--                            },-->
+<!--                            interaction: {-->
+<!--                                intersect: false,-->
+<!--                            },-->
+<!--                            scales: {-->
+<!--                                x: {-->
+<!--                                    display: true,-->
+<!--                                    title: {-->
+<!--                                        display: true,-->
+<!--                                        text: 'Iterations'-->
+<!--                                    }-->
+<!--                                },-->
+<!--                                y: {-->
+<!--                                    display: true,-->
+<!--                                    title: {-->
+<!--                                        display: true,-->
+<!--                                        text: 'Memory Usage (KB)'-->
+<!--                                    }-->
+<!--                                }-->
+<!--                            }-->
+<!--                        },-->
+<!--                    };-->
 
-                    var ctx_interpolation = document.getElementById(title).getContext('2d');
-                    var interpolar_chart = new Chart(ctx_interpolation, interpolar_config);
+<!--                    var ctx_interpolation = document.getElementById(title).getContext('2d');-->
+<!--                    var interpolar_chart = new Chart(ctx_interpolation, interpolar_config);-->
 
-                    var ctx_interpolation2 = document.getElementById(title + 2).getContext('2d');
-                    var interpolar_chart2 = new Chart(ctx_interpolation2, interpolar_config2);
-                }
-            })
-            .catch(error => console.error('Error fetching JSON:', error));
-    });
+<!--                    var ctx_interpolation2 = document.getElementById(title + 2).getContext('2d');-->
+<!--                    var interpolar_chart2 = new Chart(ctx_interpolation2, interpolar_config2);-->
+<!--                }-->
+<!--            })-->
+<!--            .catch(error => console.error('Error fetching JSON:', error));-->
+<!--    });-->
 
-</script>
+<!--</script>-->
 
 <script>
     function fetchAndRenderChart(filename) {
@@ -521,7 +521,8 @@
     const files = [
         'queryBuilderSelect.json',
         'queryBuilderInserts.json',
-        'ORMInserts.json'
+        'ORMInserts.json',
+        'ORMSelect.json'
     ];
 
     files.forEach(filename => fetchAndRenderChart(filename));
