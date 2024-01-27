@@ -10,7 +10,7 @@ class User extends Model
 {
     use \App\User;
     protected $table      = 'users';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'user_id';
 
     protected $allowedFields = ['username', 'email','registration_date', 'is_active', 'birth_date'];
 

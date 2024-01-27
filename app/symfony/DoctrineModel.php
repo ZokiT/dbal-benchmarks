@@ -29,4 +29,19 @@ class DoctrineModel
         /** @var User $user */
         $userRepository->findOneBy(['isActive' => true]);
     }
+
+
+    /**
+     * @throws ORMException
+     */
+    public static function update(array $params): void {
+        /** @var EntityManager $em */
+        $em = $params[0];
+        /** @var User $user */
+        $user = $params[1];
+
+        $user->setEmail(uniqid() . 'ormupdate@example.com');
+
+        $em->flush($user);
+    }
 }

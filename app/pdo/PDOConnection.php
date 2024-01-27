@@ -18,4 +18,20 @@ class PDOConnection
         return null;
     }
 
+    public static function connectForUpdate(DatabaseConfig $config): array
+    {
+        // Create a PDO instance
+        $pdo = self::connect($config);
+
+        // Prepare the SQL statement with placeholders
+        $sql = 'SELECT user_id FROM users LIMIT 1';
+        $stmt = $pdo->prepare($sql);
+
+        // Execute the statement
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return [$pdo, $user['user_id']];
+    }
+
 }

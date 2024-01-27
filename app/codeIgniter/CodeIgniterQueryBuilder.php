@@ -20,4 +20,16 @@ class CodeIgniterQueryBuilder
 
         $builder->get()->getResultArray();
     }
+
+    public static function update(array $params): void {
+        /** @var BaseConnection $db */
+        $db = $params[0];
+        $userId = $params[1];
+
+        $db->table('users')
+            ->update(
+                ['email' => uniqid() . '@codeigniter_update_example.com'],
+                ['user_id' => $userId]
+            );
+    }
 }

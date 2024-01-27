@@ -40,8 +40,25 @@ class LaminasModel
         );
         $resultSet->initialize($result);
 
-        // This is the return User
+        // This is the returned User
         $resultSet->current();
+    }
+
+    public static function update(array $params): void {
+        /** @var Sql $sql */
+        $sql = $params[0];
+        /** @var User $user */
+        $user = $params[1];
+
+        $user->setEmail(uniqid() . '@laminas_orm@example.com');
+        $update = $sql->update('users');
+        $update->set([
+            'email' => $user->getEmail(),
+        ]);
+        $update->where(['user_id' => $user->getUserId()]);
+
+        $updateStatement = $sql->prepareStatementForSqlObject($update);
+        $updateStatement->execute();
     }
 
 }

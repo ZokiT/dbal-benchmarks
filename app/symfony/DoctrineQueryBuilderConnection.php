@@ -19,4 +19,17 @@ class DoctrineQueryBuilderConnection
         // Return the query builder
         return $conn->createQueryBuilder();
     }
+
+    /**
+     * @throws Exception
+     */
+    public static function connectForUpdate(DatabaseConfig $config): array
+    {
+        $queryBuilder = self::connect($config);
+
+        $userId = $queryBuilder->select('u.user_id')
+            ->from('users', 'u')->fetchOne();
+
+        return [$queryBuilder, $userId];
+    }
 }

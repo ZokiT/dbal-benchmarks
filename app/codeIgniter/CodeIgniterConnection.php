@@ -2,6 +2,7 @@
 
 namespace App\codeIgniter;
 
+use App\codeIgniter\Models\User;
 use App\DatabaseConfig;
 use CodeIgniter\Database\BaseConnection;
 use CodeIgniter\Database\Config;
@@ -25,5 +26,24 @@ class CodeIgniterConnection
         }
 
         return null;
+    }
+
+    public static function connectForUpdate(DatabaseConfig $config): array {
+        $baseConnection = self::connect($config);
+
+        $builder = $baseConnection->table('users')
+            ->select('user_id')->limit(1);
+        $userId = $builder->get()->getFirstRow()->user_id;
+
+        return [$baseConnection, (int)$userId];
+    }
+
+    public static function connectForORMUpdate(DatabaseConfig $config): array {
+        $baseConnection = self::connect($config);
+
+        $user = new User($baseConnection);
+        $res = $user->first();
+
+        return [$baseConnection, $res];
     }
 }

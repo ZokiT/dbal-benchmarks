@@ -29,4 +29,17 @@ class PDOQueries
         $stmt->execute([true]);
         $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public static function update(array $params): void {
+        /** @var PDO $pdo */
+        $pdo = $params[0];
+        $userId = $params[1];
+
+        // Prepare the SQL statement with placeholders
+        $sql = 'UPDATE users SET email = ? WHERE user_id = ?';
+        $stmt = $pdo->prepare($sql);
+
+        // Execute the statement
+        $stmt->execute([uniqid() . '@pdo_update_example.com', $userId]);
+    }
 }

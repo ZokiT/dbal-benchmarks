@@ -26,7 +26,6 @@ abstract class AbstractCommand extends Command
 
     const FONTS_FOLDER = './public/fonts/monospace.ttf';
 
-    // TODO add option for charts results storing and showing the charts
     const CHARTS_FOLDER = './public/charts';
 
     // TODO split the whole const and methods for generating images in separate Classes
@@ -43,7 +42,6 @@ abstract class AbstractCommand extends Command
     {
         $this->benchmark = $benchmark;
         parent::__construct($name);
-        // TODO add command name for graph title
     }
 
     protected function configure(): void {
@@ -54,8 +52,6 @@ abstract class AbstractCommand extends Command
     }
 
     protected function outputResults(OutputInterface $output): void {
-
-        //TODO store the result to local file for graph UI
 
         $this->prepareAndRenderTableResults($output);
 

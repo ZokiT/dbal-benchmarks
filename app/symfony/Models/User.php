@@ -195,4 +195,54 @@ class User
     {
         $this->username = $username;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    /**
+     * @param Collection $orders
+     */
+    public function setOrders(Collection $orders): void
+    {
+        $this->orders = $orders;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAddresses(): Collection
+    {
+        return $this->addresses;
+    }
+
+    /**
+     * @param Collection $addresses
+     */
+    public function setAddresses(Collection $addresses): void
+    {
+        $this->addresses = $addresses;
+    }
+
+
 }

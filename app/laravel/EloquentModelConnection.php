@@ -3,6 +3,7 @@
 namespace App\laravel;
 
 use App\DatabaseConfig;
+use App\laravel\Models\User;
 
 class EloquentModelConnection extends BaseConnection
 {
@@ -10,5 +11,12 @@ class EloquentModelConnection extends BaseConnection
     {
         $capsule = self::prepareCapsule($config);
         $capsule->bootEloquent();
+    }
+
+    public static function connectForUpdate(DatabaseConfig $config)
+    {
+        self::connect($config);
+
+        return User::first();
     }
 }

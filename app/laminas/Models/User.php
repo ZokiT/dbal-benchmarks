@@ -6,6 +6,8 @@ class User
 {
     use \App\User;
 
+    protected int $userId;
+
     protected string $username;
 
     protected string $email;
@@ -24,9 +26,21 @@ class User
 
     protected array $addresses;
 
-//    public function __construct($email) {
-//        $this->email = $email;
-//    }
+    /**
+     * @return int
+     */
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param string $userId
+     */
+    public function setUserId(string $userId): void
+    {
+        $this->userId = (int)$userId;
+    }
 
     /**
      * @return string
