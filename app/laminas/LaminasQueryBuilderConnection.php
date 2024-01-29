@@ -2,6 +2,7 @@
 
 namespace App\laminas;
 
+use App\Benchmark\Benchmark;
 use App\DatabaseConfig;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Select;
@@ -10,17 +11,16 @@ use Laminas\Db\TableGateway\TableGateway;
 
 class LaminasQueryBuilderConnection
 {
-    public static function connect(DatabaseConfig $config): TableGateway
+    public static function connect(Benchmark $benchmark): TableGateway
     {
-        $adapter = new Adapter($config->getLaminasDatabaseConfig());
+        $adapter = new Adapter(DatabaseConfig::getLaminasDatabaseConfig());
 
         return new TableGateway('users', $adapter);
     }
 
-    public static function connectForUpdate(DatabaseConfig $config): array
+    public static function connectForUpdate(Benchmark $benchmark): array
     {
-        $adapter = new Adapter($config->getLaminasDatabaseConfig());
-        $tableGateway = new TableGateway('users', $adapter);
+        $tableGateway = self::connect($benchmark);
 
         $resultSet = $tableGateway->select(function (Select $select) {
             $select->limit(1);

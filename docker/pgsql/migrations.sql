@@ -33,7 +33,7 @@ create table "orders" (
 create table "categories" (
     "category_id" bigserial not null primary key,
     "category_name" varchar(255) not null unique,
-    "parent_category_id" integer not null,
+    "parent_category_id" integer,
     "image" varchar(255) null,
     constraint "categories_parent_category_id_foreign" foreign key ("parent_category_id") references "categories" ("category_id")
         on delete cascade on update cascade

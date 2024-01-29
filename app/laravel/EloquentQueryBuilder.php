@@ -16,8 +16,9 @@ class EloquentQueryBuilder
         $queryBuilder->select()
             ->from('users')
             ->where('is_active', '=', 'true')
+            ->limit(100000)
             ->get()
-            ->first();
+            ->all();
     }
 
     public static function update(array $params): void {

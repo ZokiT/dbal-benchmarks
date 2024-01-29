@@ -11,16 +11,17 @@ The tool uses php 8.1, docker containers, pgsql database, included DBAL and ORM 
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Options](#options)
 - [Custom benchmarks](#customization)
 
 ## Installation
 
-`git clone https://github.com/example/example.git`
+`git clone https://github.com/ZokiT/dbal-benchmarks.git`
 
 [docker](https://docs.docker.com/engine/install) is required to use the bash script which will prepare everything for you, as well for a better distribution of the project among other devices
 
 without docker, you need to ensure that you have installed and enabled required extensions and tools:
-php 8.1, composer, pgsql, pdo, pdo_pgsql and already created database. Change the database configuration, and you should be able to run the benchmarks commands:
+php 8.1, composer, pgsql, pdo, pdo_pgsql and already created database. Change the database configuration, migrate, and you should be able to run the benchmarks commands:
 
 ```
 cd /path/to/dbal-benchmarks
@@ -43,6 +44,8 @@ cd /path/to/dbal-benchmarks
 docker-compose up -d
 docker exec -it app-dbal-benchmarks sh
 composer install
+docker exec -it db-dbal-benchmarks sh
+psql -U user -d dbal_benchmarks -f /var/lib/pgsql/migrations.sql
 php cli.php list
 ```
 
@@ -51,6 +54,7 @@ php cli.php list
 ```
 cd /path/to/dbal-benchmarks
 sh chiron.sh init
+php cli.php list
 ```
 ## Configuration
 
@@ -67,6 +71,16 @@ If you need to change the database configuration for this project, you can do so
     /** CodeIgniter requires a different driver name for the database connection, refer to the documentation for more details */
     const CODE_IGNITER_DRIVER = 'Postgre';
 ```
+
+## Options
+There are three options you may provide along with the commands:
+
+`-i [number]` - as number of iterations
+
+`--graph` - to save the results to a (for now) json file (public/charts) and show the results as Chart on localhost, to show the charts you need to include the file in the index.html files const
+
+`--image` - to store the results as image (public/images)
+
 
 ## Customization
 
@@ -111,13 +125,13 @@ The Hash Algorithm Benchmarks showcase a straightforward approach to integrate n
                    $hash = sha1($string);
                }
            );
+   
+           // Add more methods to benchmark
 
            return parent::execute($input, $output);
        }
    }
    ```
-
-#### Configure Benchmarks
 
 Within the `execute` method, use the `addMethod` function to add benchmarks for each hash algorithm you wish to evaluate. The callback functions provided to `addMethod` should contain the actual code to be benchmarked.
 
@@ -139,8 +153,6 @@ Within the `execute` method, use the `addMethod` function to add benchmarks for 
     ```bash
     php cli.php hashAlgorithm
     ```
-   
-   optionally you may add `--image true` option to generate the result to an image - all the images are stored in the public/images folder
 
     This will execute the benchmark for the specified hash algorithms and provide performance insights.
     

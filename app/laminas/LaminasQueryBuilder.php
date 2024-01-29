@@ -16,7 +16,7 @@ class LaminasQueryBuilder
     public static function select(TableGateway $tableGateway): void {
         $rowSet = $tableGateway->select(function (Select $select) {
             $select->where->equalTo('is_active', 'true');
-            $select->limit(1);
+            $select->limit(100000);
         });
 
         // the result is Traversable, Countable object, so we need to actually get them

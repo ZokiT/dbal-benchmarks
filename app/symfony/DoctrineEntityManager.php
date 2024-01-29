@@ -2,6 +2,8 @@
 
 namespace App\symfony;
 
+use App\Benchmark\Benchmark;
+use App\Benchmark\Params;
 use App\DatabaseConfig;
 use App\symfony\Models\User;
 use Doctrine\DBAL\DriverManager;
@@ -18,7 +20,7 @@ class DoctrineEntityManager
     /**
      * @throws MissingMappingDriverImplementation|Exception
      */
-    public static function connect(DatabaseConfig $config): EntityManager
+    public static function connect(Params $params): Params
     {
         // Specify the path to your entity classes
         $entityPath = [__DIR__ . '/Models'];
@@ -29,24 +31,26 @@ class DoctrineEntityManager
 //        $metaCache = new PhpFilesAdapter('doctrine_metadata', 0, __DIR__ . '/../symfony/cache');
 //        $metadataConfig->setMetadataCache($metaCache);
 
-        $connection = DriverManager::getConnection($config->getSymphonyDatabaseConfig(), $metadataConfig);
+        $connection = DriverManager::getConnection(DatabaseConfig::getSymphonyDatabaseConfig(), $metadataConfig);
+        $params->addParam('doctrineEntityManager', new EntityManager($connection, $metadataConfig));
 
-        return new EntityManager($connection, $metadataConfig);
+        return $params;
     }
 
     /**
      * @throws MissingMappingDriverImplementation|Exception
      * @throws NotSupported
      */
-    public static function connectForUpdate(DatabaseConfig $config): array
+    public static function connectForUpdate(Params $params): Params
     {
-        $em = self::connect($config);
+        $params = self::connect($params);
 
         // Get the repository for the User entity
-        $userRepository = $em->getRepository(User::class);
+        $userRepository = $params->getParam('doctrineEntityManager')->getRepository(User::class);
         /** @var User $user */
         $user = $userRepository->findOneBy([]);
+        $params->addParam('user', $user);
 
-        return [$em, $user];
+        return $params;
     }
 }

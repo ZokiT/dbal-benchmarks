@@ -44,13 +44,19 @@ class ORMInsert extends AbstractCommand
         $this->getBenchmark()->addMethod(
             'laminas model insert',
             [LaminasModel::class, 'insert'],
-            [LaminasSqlConnection::class, 'connect']
+            [LaminasSqlConnection::class, 'connect'],
+            function (\Throwable $e) {
+                var_dump($e->getMessage());
+            }
         );
 
         $this->getBenchmark()->addMethod(
             'codeIgniter model insert',
             [CodeIgniterModel::class, 'insert'],
-            [CodeIgniterConnection::class, 'connect']
+            [CodeIgniterConnection::class, 'connect'],
+            function (\Throwable $e) {
+                var_dump($e->getMessage());
+            }
         );
 
         return parent::execute($input, $output);

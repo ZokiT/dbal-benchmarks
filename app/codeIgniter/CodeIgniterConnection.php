@@ -2,6 +2,8 @@
 
 namespace App\codeIgniter;
 
+use App\Benchmark\Benchmark;
+use App\Benchmark\Params;
 use App\codeIgniter\Models\User;
 use App\DatabaseConfig;
 use CodeIgniter\Database\BaseConnection;
@@ -10,7 +12,7 @@ use Config\Paths;
 
 class CodeIgniterConnection
 {
-    public static function connect(DatabaseConfig $config): ?BaseConnection
+    public static function connect(Params $params): Params
     {
         defined('CI_DEBUG') || define('CI_DEBUG', false);
         defined('ENVIRONMENT') || define('ENVIRONMENT', 'production');
@@ -20,30 +22,37 @@ class CodeIgniterConnection
         require_once __DIR__ . '/../vendor/codeigniter4/framework/system/bootstrap.php';
 
         try {
-            return Config::connect($config->getCodeIgniterDatabaseConfig());
+            $params->addParam('codeigniterBaseConnection', Config::connect(DatabaseConfig::getCodeIgniterDatabaseConfig()));
         } catch (\Throwable $throwable) {
             // if unable to connect catch the exception and count everything as miss
         }
 
-        return null;
+        return $params;
     }
 
-    public static function connectForUpdate(DatabaseConfig $config): array {
-        $baseConnection = self::connect($config);
+    public static function connectForUpdate(Params $params): Params
+    {
+        $params = self::connect($params);
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
 
         $builder = $baseConnection->table('users')
             ->select('user_id')->limit(1);
         $userId = $builder->get()->getFirstRow()->user_id;
 
-        return [$baseConnection, (int)$userId];
+        $params->addParam('userId', (int)$userId);
+
+        return $params;
     }
 
-    public static function connectForORMUpdate(DatabaseConfig $config): array {
-        $baseConnection = self::connect($config);
+    public static function connectForORMUpdate(Params $params): Params
+    {
+        $params = self::connect($params);
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
 
         $user = new User($baseConnection);
         $res = $user->first();
+        $params->addParam('user', $res);
 
-        return [$baseConnection, $res];
+        return $params;
     }
 }

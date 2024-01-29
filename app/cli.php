@@ -13,6 +13,8 @@ use Symfony\Component\Console\Application;
 
 try {
 
+    ini_set('memory_limit', '512M');
+
     $benchmark = new Benchmark();
     $application = new Application();
 

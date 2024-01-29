@@ -4,3 +4,4 @@ app/public/images/*
 app/public/charts/*
 !app/public/charts/chart.js
 app/symfony/cache
+app/laravel/migrations

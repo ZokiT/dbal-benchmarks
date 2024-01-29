@@ -22,6 +22,7 @@ abstract class AbstractCommand extends Command
     const ITERATIONS_OPTION = 'iterations';
     const IMAGE_OPTION      = 'image';
     const CHART_OPTION      = 'graph';
+    const SELECT_LIMIT      = 'selectLimit';
 
 
     const FONTS_FOLDER = './public/fonts/monospace.ttf';
@@ -35,6 +36,7 @@ abstract class AbstractCommand extends Command
     const IMAGES_TABLE_ROW_HEIGHT = 17;
     const IMAGES_TABLE_MARGINS = 20;
     const IMAGES_TABLE_PADDINGS = 10;
+    const DEFAULT_ITERATIONS = 100;
 
     private Benchmark $benchmark;
 
@@ -48,7 +50,8 @@ abstract class AbstractCommand extends Command
         $this
             ->addOption(self::ITERATIONS_OPTION, 'i',  InputOption::VALUE_OPTIONAL, 'number of iterations to perform the benchmarks')
             ->addOption(self::IMAGE_OPTION, 'img', InputOption::VALUE_NEGATABLE, 'export the result to image')
-            ->addOption(self::CHART_OPTION, 'c', InputOption::VALUE_NEGATABLE, 'store the results in local file for graph usage');
+            ->addOption(self::CHART_OPTION, 'c', InputOption::VALUE_NEGATABLE, 'store the results in local file for graph usage')
+            ->addOption(self::SELECT_LIMIT, 'l', InputOption::VALUE_OPTIONAL, 'add limit for select queries');
     }
 
     protected function outputResults(OutputInterface $output): void {
@@ -68,7 +71,8 @@ abstract class AbstractCommand extends Command
                     [[
                         "result" => $this->getBenchmark()->getResults(),
                         "iterations" => $this->getBenchmark()->getIterations(),
-                        "title" => $this->getName()
+                        "title" => $this->getName(),
+                        "selectLimit" => $this->getBenchmark()->getSelectLimit()
                     ]],
                     json_decode($fileContent, true))
                 );
@@ -79,7 +83,8 @@ abstract class AbstractCommand extends Command
                     [[
                         "result" => $this->getBenchmark()->getResults(),
                         "iterations" => $this->getBenchmark()->getIterations(),
-                        "title" => $this->getName()
+                        "title" => $this->getName(),
+                        "selectLimit" => $this->getBenchmark()->getSelectLimit()
                     ]]
                 ));
             }
@@ -106,6 +111,14 @@ abstract class AbstractCommand extends Command
         $this->getBenchmark()->setOutputToImage($input->getOption(self::IMAGE_OPTION) ?? false);
         $this->getBenchmark()->setStoreToFile($input->getOption(self::CHART_OPTION) ?? false);
 
+        $limit = $input->getOption(self::SELECT_LIMIT);
+        $this->getBenchmark()->setUseLimit(($limit !== null && (int)$limit > 0));
+        if ($this->getBenchmark()->getUseLimit()) {
+            $output->writeln('Option to use select limit activated, the iterations will be set to: ' . Benchmark::DEFAULT_ITERATIONS);
+            $this->getBenchmark()->setSelectLimit((int)$limit);
+            $this->getBenchmark()->setIterations(Benchmark::DEFAULT_ITERATIONS);
+        }
+
         $this->getBenchmark()->run($output);
         $this->outputResults($output);
 
@@ -131,7 +144,7 @@ abstract class AbstractCommand extends Command
         }
 
         $table
-            ->setHeaders($this->getBenchmark()::TABLE_HEADERS)
+            ->setHeaders($this->getBenchmark()->getHeaders())
             ->setRows($rows)
         ;
 

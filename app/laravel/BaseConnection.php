@@ -8,11 +8,11 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 class BaseConnection
 {
 
-    public static function prepareCapsule(DatabaseConfig $config): Capsule
+    public static function prepareCapsule(): Capsule
     {
         $capsule = new Capsule;
 
-        $capsule->addConnection($config->getLaravelDatabaseConfig());
+        $capsule->addConnection(DatabaseConfig::getLaravelDatabaseConfig());
 
         // Make this Capsule instance available globally via static methods... (optional)
         $capsule->setAsGlobal();

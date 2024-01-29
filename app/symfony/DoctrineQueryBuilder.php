@@ -27,9 +27,7 @@ class DoctrineQueryBuilder
             ->from('users', 'u')
             ->where('u.is_active = :active')
             ->setParameter('active', true)
-            ->setMaxResults(1);
-
-        // use getFirstResult() maybe
+            ->setMaxResults(100000);
 
         $queryBuilder->executeQuery()->fetchAllAssociative();
     }

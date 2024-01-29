@@ -2,6 +2,7 @@
 
 namespace App\symfony;
 
+use App\Benchmark\Benchmark;
 use App\DatabaseConfig;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
@@ -12,9 +13,9 @@ class DoctrineQueryBuilderConnection
     /**
      * @throws Exception
      */
-    public static function connect(DatabaseConfig $config): QueryBuilder
+    public static function connect(Benchmark $benchmark): QueryBuilder
     {
-        $conn = DriverManager::getConnection($config->getSymphonyDatabaseConfig());
+        $conn = DriverManager::getConnection(DatabaseConfig::getSymphonyDatabaseConfig());
 
         // Return the query builder
         return $conn->createQueryBuilder();
@@ -23,9 +24,9 @@ class DoctrineQueryBuilderConnection
     /**
      * @throws Exception
      */
-    public static function connectForUpdate(DatabaseConfig $config): array
+    public static function connectForUpdate(Benchmark $benchmark): array
     {
-        $queryBuilder = self::connect($config);
+        $queryBuilder = self::connect($benchmark);
 
         $userId = $queryBuilder->select('u.user_id')
             ->from('users', 'u')->fetchOne();

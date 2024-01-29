@@ -2,6 +2,7 @@
 
 namespace App\laminas;
 
+use App\Benchmark\Params;
 use App\laminas\Models\User;
 use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Db\Sql\Sql;
@@ -9,11 +10,13 @@ use Laminas\Hydrator\ClassMethodsHydrator;
 
 class LaminasModel
 {
-    public static function insert(Sql $sql): void {
+    public static function insert(Params $params): void {
 
-        $hydrator = new ClassMethodsHydrator();
+        $hydrator = new ClassMethodsHydrator(true, false);
         // Hydrate a User object with data
         $user = $hydrator->hydrate(User::fake(), new User());
+
+        $sql = $params->getParam('laminasSql');
 
         // Build the SQL insert statement
         $insert = $sql->insert('users');
@@ -24,11 +27,12 @@ class LaminasModel
         $statement->execute();
     }
 
-    public static function select(Sql $sql): void {
-
+    public static function select(Params $params): void {
+        $limit = $params->getParam('selectLimit');
+        $sql = $params->getParam('laminasSql');
         $select    = $sql->select('users');
         $select->where(['is_active' => 'false']);
-        $select->limit(1);
+        $select->limit($limit);
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result    = $statement->execute();
@@ -44,18 +48,18 @@ class LaminasModel
         $resultSet->current();
     }
 
-    public static function update(array $params): void {
+    public static function update(Params $params): void {
         /** @var Sql $sql */
-        $sql = $params[0];
+        $sql = $params->getParam('laminasSql');
         /** @var User $user */
-        $user = $params[1];
+        $user = $params->getParam('user');
 
         $user->setEmail(uniqid() . '@laminas_orm@example.com');
         $update = $sql->update('users');
         $update->set([
             'email' => $user->getEmail(),
         ]);
-        $update->where(['user_id' => $user->getUserId()]);
+        $update->where(['user_id' => $user->userId]);
 
         $updateStatement = $sql->prepareStatementForSqlObject($update);
         $updateStatement->execute();

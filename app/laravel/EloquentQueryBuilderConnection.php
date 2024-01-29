@@ -2,15 +2,14 @@
 
 namespace App\laravel;
 
-use App\DatabaseConfig;
+use App\Benchmark\Benchmark;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Facades\DB;
 
 class EloquentQueryBuilderConnection extends BaseConnection
 {
-    public static function connect(DatabaseConfig $config): Builder
+    public static function connect(Benchmark $benchmark): Builder
     {
-        $capsule = self::prepareCapsule($config);
+        $capsule = self::prepareCapsule();
 
         // Do not boot Eloquent in this case
         // Create a new query builder instance
@@ -18,9 +17,9 @@ class EloquentQueryBuilderConnection extends BaseConnection
         return new Builder($capsule->getConnection());
     }
 
-    public static function connectForUpdate(DatabaseConfig $config): array
+    public static function connectForUpdate(Benchmark $benchmark): array
     {
-        $builder = self::connect($config);
+        $builder = self::connect($benchmark);
         $user = $builder->select('user_id')->from('users')->first();
 
         return [$builder, $user->user_id];

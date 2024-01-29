@@ -27,7 +27,7 @@ class DatabaseConfig {
         'collation' => "string",
         'prefix'    => "string"
     ])]
-    public function getLaravelDatabaseConfig(): array
+    public static function getLaravelDatabaseConfig(): array
     {
         return [
             'driver'    => self::DRIVER,
@@ -42,7 +42,7 @@ class DatabaseConfig {
         ];
     }
 
-    public function getCodeIgniterDatabaseConfig(): array
+    public static function getCodeIgniterDatabaseConfig(): array
     {
         return [
             'DSN'      => '',
@@ -74,7 +74,7 @@ class DatabaseConfig {
         'driver'   => "string",
         'port'     => "int"
     ])]
-    public function getLaminasDatabaseConfig(): array
+    public static function getLaminasDatabaseConfig(): array
     {
         return [
             'hostname' => self::HOST,
@@ -94,7 +94,7 @@ class DatabaseConfig {
         'driver'   => "string",
         'port'     => "int"
     ])]
-    public function getSymphonyDatabaseConfig(): array
+    public static function getSymphonyDatabaseConfig(): array
     {
         return [
             'dbname'   => self::DATABASE,
@@ -111,7 +111,7 @@ class DatabaseConfig {
         'username' => "string",
         'password' => "string"
     ])]
-    public function getPDODatabaseConfig(): array
+    public static function getPDODatabaseConfig(): array
     {
         return [
             'dsn' => self::DRIVER . ':host=' . self::HOST . ';port=' . self::PORT . ';dbname=' . self::DATABASE,

@@ -12,6 +12,7 @@ use App\laravel\EloquentModel;
 use App\symfony\DoctrineEntityManager;
 use App\symfony\DoctrineModel;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ORMSelect extends AbstractCommand

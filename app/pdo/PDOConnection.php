@@ -2,26 +2,27 @@
 
 namespace App\pdo;
 
+use App\Benchmark\Benchmark;
 use App\DatabaseConfig;
 use PDO;
 
 class PDOConnection
 {
-    public static function connect(DatabaseConfig $config): ?PDO
+    public static function connect(Benchmark $benchmark): ?PDO
     {
         // Create a PDO instance
         try {
-            return new PDO(...$config->getPDODatabaseConfig());
+            return new PDO(...DatabaseConfig::getPDODatabaseConfig());
         } catch (\Throwable $throwable) {
         }
 
         return null;
     }
 
-    public static function connectForUpdate(DatabaseConfig $config): array
+    public static function connectForUpdate(Benchmark $benchmark): array
     {
         // Create a PDO instance
-        $pdo = self::connect($config);
+        $pdo = self::connect($benchmark);
 
         // Prepare the SQL statement with placeholders
         $sql = 'SELECT user_id FROM users LIMIT 1';

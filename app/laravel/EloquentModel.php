@@ -2,6 +2,7 @@
 
 namespace App\laravel;
 
+use App\Benchmark\Params;
 use App\laravel\Models\User;
 
 class EloquentModel
@@ -10,8 +11,9 @@ class EloquentModel
         User::insert(User::fake());
     }
 
-    public static function select(): void {
-        User::where('is_active', true)->first();
+    public static function select(Params $params): void {
+        $limit = $params->getParam('selectLimit');
+        User::where('is_active', true)->limit($limit)->get();
     }
 
     public static function update(User $user): void {

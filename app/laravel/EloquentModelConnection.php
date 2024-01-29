@@ -2,21 +2,25 @@
 
 namespace App\laravel;
 
-use App\DatabaseConfig;
+use App\Benchmark\Params;
 use App\laravel\Models\User;
 
 class EloquentModelConnection extends BaseConnection
 {
-    public static function connect(DatabaseConfig $config)
+    public static function connect(Params $params): Params
     {
-        $capsule = self::prepareCapsule($config);
+        $capsule = self::prepareCapsule();
         $capsule->bootEloquent();
+
+        return $params;
     }
 
-    public static function connectForUpdate(DatabaseConfig $config)
+    public static function connectForUpdate(Params $params): Params
     {
-        self::connect($config);
+        $params = self::connect($params);
+        $user = User::first();
+        $params->addParam('user', $user);
 
-        return User::first();
+        return $params;
     }
 }

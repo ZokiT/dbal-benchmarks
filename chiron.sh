@@ -26,6 +26,11 @@ if [ "$1" = "init" ]; then
     docker exec -it app-dbal-benchmarks sh -c "./app/composer install"
     echo "Composer installed inside the container."
 
+    echo "creating the DB tables"
+    docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/migrations.sql"
+    echo "migrating the tables"
+#    docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/seeds.sql"
+
     # Exec into the container
     echo "Executing shell in app-dbal-benchmarks..."
 
@@ -42,6 +47,19 @@ elif [ "$1" = "exec" ]; then
     else
         docker exec -it app-dbal-benchmarks sh
     fi
+elif [ "$1" = "fresh" ]; then
+    # Check if running on Windows
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        echo "recreating the DB tables"
+        winpty docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/migrations.sql"
+        echo "migrating the tables"
+  #    winpty docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/seeds.sql"
+    else
+        echo "recreating the DB tables"
+        docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/migrations.sql"
+        echo "migrating the tables"
+    #    winpty docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/seeds.sql"
+    fi
 else
-    echo "Invalid command. Usage: sh.chiron exec"
+    echo "Invalid command. Usage: sh.chiron [init|exec|fresh]"
 fi

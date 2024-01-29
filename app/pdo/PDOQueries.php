@@ -22,7 +22,7 @@ class PDOQueries
     public static function select(PDO $pdo): void {
 
         // Prepare the SQL statement with placeholders
-        $sql = 'SELECT * FROM users WHERE is_active = ? LIMIT 1';
+        $sql = 'SELECT * FROM users WHERE is_active = ? LIMIT 100000';
         $stmt = $pdo->prepare($sql);
 
         // Execute the statement

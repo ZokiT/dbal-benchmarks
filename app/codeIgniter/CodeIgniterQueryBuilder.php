@@ -16,7 +16,7 @@ class CodeIgniterQueryBuilder
         $builder = $db->table('users')
             ->select()
             ->where('is_active', 'true')
-            ->limit(1);
+            ->limit(100000);
 
         $builder->get()->getResultArray();
     }

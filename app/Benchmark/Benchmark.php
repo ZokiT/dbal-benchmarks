@@ -2,12 +2,11 @@
 
 namespace App\Benchmark;
 
-use App\DatabaseConfig;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Benchmark
 {
-    const DEFAULT_ITERATIONS = 1000;
+    const DEFAULT_ITERATIONS = 1;
 
     private array $methods   = [];
 
@@ -21,9 +20,12 @@ class Benchmark
         'Misses'
     ];
 
-    private array $results      = [];
-    private bool $outputToImage = false;
-    private bool $storeToFile   = false;
+    private array $headers        = self::TABLE_HEADERS;
+    private array $results        = [];
+    private bool $outputToImage   = false;
+    private bool $storeToFile     = false;
+    private int $selectLimit      = 0;
+    private bool $useSelectLimit  = false;
 
     public function addMethod($methodName, $callback, $setUpCallback = null, $handleException = null) {
         $this->methods[$methodName] = [
@@ -35,18 +37,22 @@ class Benchmark
 
     public function run(OutputInterface $output) {
 
+        if ($this->getUseLimit()) {
+            $this->addHeader('Select Limit');
+        }
+
         foreach ($this->methods as $methodName => $method) {
 
             $output->writeln("Starting {$methodName}");
             sleep(1);
             gc_collect_cycles(); // garbage collector to have precise memory consumption
 
-            $sharedObject = null;
+            $params = new Params();
+            $params->addParam('selectLimit', $this->getSelectLimit());
 
-            $config = new DatabaseConfig();
             if ($method['setUpCallback']) {
-                // Pass the shared object explicitly to the setUpCallback function
-                $sharedObject = call_user_func($method['setUpCallback'], $config);
+                // Pass the shared objects explicitly to the setUpCallback function
+                $params = call_user_func($method['setUpCallback'], $params);
             }
 
             $totalTime = 0;
@@ -58,11 +64,7 @@ class Benchmark
                 $timeStart = microtime(true);
                 // Conditionally use the shared object based on its availability
                 try {
-                    if ($sharedObject !== null) {
-                        @call_user_func($method['callback'], $sharedObject);
-                    } else {
-                        @call_user_func($method['callback']);
-                    }
+                    @call_user_func($method['callback'], $params);
                 } catch (\Throwable $throwable) {
                     if ($method['handleException']) {
                         call_user_func($method['handleException'], $throwable);
@@ -84,11 +86,13 @@ class Benchmark
                 $averageExecutionTime,
                 $memoryUsage,
                 $this->getIterations(),
-                $miss
+                $miss,
+                $this->getSelectLimit()
             );
 
             $output->writeln("Done $methodName");
             unset($this->methods[$methodName]);
+            unset($params);
         }
     }
 
@@ -102,11 +106,15 @@ class Benchmark
         $this->iterations = $n > 0 ? $n : self::DEFAULT_ITERATIONS;
     }
 
-    private function addResult(string $methodName, float $averageExecutionTime, float $averageMemoryUsage, int $hits, int $miss)
+    private function addResult(string $methodName, float $averageExecutionTime, float $averageMemoryUsage, int $hits, int $miss, int $selectLimit)
     {
         $this->results[$methodName] = [
             $methodName, $averageExecutionTime, $averageMemoryUsage, $hits, $miss
         ];
+
+        if ($this->getUseLimit()) {
+            $this->results[$methodName][] = $selectLimit;
+        }
     }
 
     public function getResults(): array
@@ -132,5 +140,34 @@ class Benchmark
     public function getStoreToFile(): bool
     {
         return $this->storeToFile;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function addHeader($header)
+    {
+        $this->headers[] = $header;
+    }
+
+    public function setSelectLimit(int $limit)
+    {
+        $this->selectLimit = $limit;
+    }
+
+    public function getUseLimit(): bool {
+        return $this->useSelectLimit;
+    }
+
+    public function getSelectLimit(): int
+    {
+        return $this->selectLimit;
+    }
+
+    public function setUseLimit(bool $val)
+    {
+        $this->useSelectLimit = $val;
     }
 }

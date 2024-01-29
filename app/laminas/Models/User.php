@@ -6,7 +6,7 @@ class User
 {
     use \App\User;
 
-    protected int $userId;
+    public ?int $userId;
 
     protected string $username;
 
@@ -25,14 +25,6 @@ class User
     protected array $orders;
 
     protected array $addresses;
-
-    /**
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return $this->userId;
-    }
 
     /**
      * @param string $userId
@@ -99,11 +91,11 @@ class User
     }
 
     /**
-     * @param string $is_active
+     * @param string|bool $is_active
      */
-    public function setIsActive(string $is_active): void
+    public function setIsActive(string|bool $is_active): void
     {
-        $this->isActive = $is_active === 't';
+        $this->isActive = $is_active === 't' || $is_active === true;
     }
 
     /**
