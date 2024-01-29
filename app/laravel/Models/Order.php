@@ -6,6 +6,8 @@ use Illuminate;
 class Order extends Illuminate\Database\Eloquent\Model
 {
     protected $primaryKey = 'order_id';
+    protected $table = 'orders';
+//    protected $fillable = ['order_date', 'status','total_amount', 'shipping_information'];
 
     public function user(): Illuminate\Database\Eloquent\Relations\BelongsTo
     {

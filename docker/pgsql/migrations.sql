@@ -1,12 +1,3 @@
-drop table if exists "order_details";
-drop table if exists "addresses";
-drop table if exists "payments";
-drop table if exists "products";
-drop table if exists "categories";
-drop table if exists "orders";
-drop table if exists "users";
-
-
 create table "users" (
     "user_id" bigserial not null primary key,
     "username" varchar(255) not null,
