@@ -21,7 +21,7 @@ services:
       - 'db'
   db:
     container_name: db-dbal-benchmarks
-    image: postgres:15-alpine
+    image: postgres:15.2-alpine
     ports:
       - "5432:5432"
     environment:
