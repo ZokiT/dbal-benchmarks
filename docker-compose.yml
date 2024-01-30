@@ -15,13 +15,13 @@ services:
     build:
       context: ./docker/php
     volumes:
-      - .\app:/app
+      - ./app:/app
     working_dir: /app
     links:
       - 'db'
   db:
     container_name: db-dbal-benchmarks
-    image: postgres:latest
+    image: postgres:15-alpine
     ports:
       - "5432:5432"
     environment:

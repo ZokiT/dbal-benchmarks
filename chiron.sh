@@ -42,17 +42,17 @@ if [ "$1" = "init" ]; then
 
     # Install Composer inside the Docker container
     echo "Installing Composer inside the container..."
-    docker exec -it app-dbal-benchmarks sh -c "./app/composer install"
+    docker exec -it app-dbal-benchmarks sh -c "composer install"
     echo "Composer installed inside the container."
 
     echo "creating the DB tables and fill them with data"
-    docker exec -it db-dbal-benchmarks sh -c "psql -U user dbal_benchmarks < dbal-benchmarks-dump.sql"
+    docker exec -it db-dbal-benchmarks sh -c "psql -U user -c \"DROP DATABASE IF EXISTS dbal_benchmarks;\""
+    docker exec -it db-dbal-benchmarks sh -c "psql -U user -c \"CREATE DATABASE dbal_benchmarks;\""
+    docker exec -it db-dbal-benchmarks sh -c "psql -U user dbal_benchmarks < /var/lib/pgsql/dbal-benchmarks-dump.sql"
     echo "migrating the tables"
 
     # Exec into the container
     echo "Executing shell in app-dbal-benchmarks..."
-
-    # Check if running on Windows
     ${command_prefix}docker exec -it app-dbal-benchmarks sh
 elif [ "$1" = "exec" ]; then
     ${command_prefix}docker exec -it app-dbal-benchmarks sh

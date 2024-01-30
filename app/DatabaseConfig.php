@@ -6,7 +6,7 @@ use JetBrains\PhpStorm\ArrayShape;
 
 class DatabaseConfig {
 
-    const HOST                = '192.168.99.106';
+    const HOST                = 'db';
     const USER                = 'user';
     const PASSWORD            = 'password';
     const DATABASE            = 'dbal_benchmarks';
