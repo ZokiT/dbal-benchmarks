@@ -4,8 +4,8 @@ namespace App\Benchmark\Commands;
 
 use App\codeIgniter\CodeIgniterModel;
 use App\codeIgniter\CodeIgniterConnection;
-use App\laminas\LaminasModel;
-use App\laminas\LaminasSqlConnection;
+use App\laminas\LaminasORM;
+use App\laminas\LaminasORMConnection;
 use App\laravel\EloquentModelConnection;
 use App\laravel\EloquentModel;
 use App\symfony\DoctrineEntityManager;
@@ -43,8 +43,8 @@ class ORMUpdate extends AbstractCommand
 
         $this->getBenchmark()->addMethod(
             'laminas',
-            [LaminasModel::class, 'update'],
-            [LaminasSqlConnection::class, 'connectForUpdate']
+            [LaminasORM::class, 'update'],
+            [LaminasORMConnection::class, 'connectForUpdate']
         );
 
         $this->getBenchmark()->addMethod(

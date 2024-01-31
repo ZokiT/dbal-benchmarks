@@ -4,8 +4,8 @@ namespace App\Benchmark\Commands;
 
 use App\codeIgniter\CodeIgniterModel;
 use App\codeIgniter\CodeIgniterConnection;
-use App\laminas\LaminasModel;
-use App\laminas\LaminasSqlConnection;
+use App\laminas\LaminasORM;
+use App\laminas\LaminasORMConnection;
 use App\laravel\EloquentModelConnection;
 use App\laravel\EloquentModel;
 use App\symfony\DoctrineEntityManager;
@@ -43,20 +43,14 @@ class ORMInsert extends AbstractCommand
 
         $this->getBenchmark()->addMethod(
             'laminas model insert',
-            [LaminasModel::class, 'insert'],
-            [LaminasSqlConnection::class, 'connect'],
-            function (\Throwable $e) {
-                var_dump($e->getMessage());
-            }
+            [LaminasORM::class, 'insert'],
+            [LaminasORMConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(
             'codeIgniter model insert',
             [CodeIgniterModel::class, 'insert'],
-            [CodeIgniterConnection::class, 'connect'],
-            function (\Throwable $e) {
-                var_dump($e->getMessage());
-            }
+            [CodeIgniterConnection::class, 'connect']
         );
 
         return parent::execute($input, $output);

@@ -6,6 +6,7 @@ use App\Benchmark\Commands\HashAlgorithm;
 use App\Benchmark\Commands\ORMInsert;
 use App\Benchmark\Commands\ORMSelect;
 use App\Benchmark\Commands\ORMUpdate;
+use App\Benchmark\Commands\QueryBuilderDelete;
 use App\Benchmark\Commands\QueryBuilderInsert;
 use App\Benchmark\Commands\QueryBuilderSelect;
 use App\Benchmark\Commands\QueryBuilderUpdate;
@@ -24,6 +25,7 @@ try {
     $application->add(new ORMSelect($benchmark));
     $application->add(new QueryBuilderUpdate($benchmark));
     $application->add(new ORMUpdate($benchmark));
+    $application->add(new QueryBuilderDelete($benchmark));
 
     // register other commands here
     $application->add(new HashAlgorithm($benchmark));

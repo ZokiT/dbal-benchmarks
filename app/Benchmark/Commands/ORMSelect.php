@@ -4,9 +4,9 @@ namespace App\Benchmark\Commands;
 
 use App\codeIgniter\CodeIgniterModel;
 use App\codeIgniter\CodeIgniterConnection;
-use App\laminas\LaminasModel;
+use App\laminas\LaminasORM;
+use App\laminas\LaminasORMConnection;
 use App\laminas\LaminasQueryBuilderConnection;
-use App\laminas\LaminasSqlConnection;
 use App\laravel\EloquentModelConnection;
 use App\laravel\EloquentModel;
 use App\symfony\DoctrineEntityManager;
@@ -45,8 +45,8 @@ class ORMSelect extends AbstractCommand
 
         $this->getBenchmark()->addMethod(
             'laminas db/hydrator',
-            [LaminasModel::class, 'select'],
-            [LaminasSqlConnection::class, 'connect']
+            [LaminasORM::class, 'select'],
+            [LaminasORMConnection::class, 'connect']
         );
 
         $this->getBenchmark()->addMethod(

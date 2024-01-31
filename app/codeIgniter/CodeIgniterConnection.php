@@ -12,6 +12,8 @@ use Config\Paths;
 
 class CodeIgniterConnection
 {
+    use \App\User;
+
     public static function connect(Params $params): Params
     {
         defined('CI_DEBUG') || define('CI_DEBUG', false);
@@ -52,6 +54,23 @@ class CodeIgniterConnection
         $user = new User($baseConnection);
         $res = $user->first();
         $params->addParam('user', $res);
+
+        return $params;
+    }
+
+    public static function prepareForDelete(Params $params): Params
+    {
+        $params = self::connect($params);
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
+        $iterations = $params->getParam('iterations');
+
+        $builder = $baseConnection->table('users_user_id_seq')->select('last_value');
+        $minUserId = $builder->get()->getFirstRow()->last_value;
+
+        for ($i = 0; $i < $iterations; $i++) {
+            $baseConnection->table('users')->insert(self::fake());
+        }
+        $params->addParam('minUserId', $minUserId + 1);
 
         return $params;
     }

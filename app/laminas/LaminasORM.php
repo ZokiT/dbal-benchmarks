@@ -8,10 +8,11 @@ use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Db\Sql\Sql;
 use Laminas\Hydrator\ClassMethodsHydrator;
 
-class LaminasModel
+class LaminasORM
 {
     public static function insert(Params $params): void {
 
+        // fix it using table gateway
         $hydrator = new ClassMethodsHydrator(true, false);
         // Hydrate a User object with data
         $user = $hydrator->hydrate(User::fake(), new User());
@@ -28,6 +29,7 @@ class LaminasModel
     }
 
     public static function select(Params $params): void {
+        // fix it using table gateway
         $limit = $params->getParam('selectLimit');
         $sql = $params->getParam('laminasSql');
         $select    = $sql->select('users');
@@ -49,6 +51,8 @@ class LaminasModel
     }
 
     public static function update(Params $params): void {
+        // fix it using table gateway
+
         /** @var Sql $sql */
         $sql = $params->getParam('laminasSql');
         /** @var User $user */

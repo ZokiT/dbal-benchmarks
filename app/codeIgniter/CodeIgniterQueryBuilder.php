@@ -2,6 +2,7 @@
 
 namespace App\codeIgniter;
 
+use App\Benchmark\Params;
 use App\User;
 use CodeIgniter\Database\BaseConnection;
 
@@ -31,5 +32,16 @@ class CodeIgniterQueryBuilder
                 ['email' => uniqid() . '@codeigniter_update_example.com'],
                 ['user_id' => $userId]
             );
+    }
+
+    public static function delete(Params $params): Params {
+        /** @var BaseConnection $baseConnection */
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
+        $minUserId = $params->getParam('minUserId');
+
+        $baseConnection->table('users')->where('user_id =', $minUserId)->delete();
+        $params->addParam('minUserId', $minUserId + 1);
+
+        return $params;
     }
 }

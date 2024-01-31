@@ -61,7 +61,7 @@ php cli.php list
 If you need to change the database configuration for this project, you can do so by modifying the constants in the `app/DatabaseConfiguration.php` file. The file contains the following constants related to the database connection:
 
 ```php
-    const HOST                = '192.168.99.106'; //change it to localhost
+    const HOST                = 'db';
     const USER                = 'user';
     const PASSWORD            = 'password';
     const DATABASE            = 'dbal_benchmarks';

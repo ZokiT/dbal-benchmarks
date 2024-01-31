@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Benchmark
 {
-    const DEFAULT_ITERATIONS = 1;
+    const DEFAULT_ITERATIONS = 1000;
 
     private array $methods   = [];
 
@@ -44,11 +44,13 @@ class Benchmark
         foreach ($this->methods as $methodName => $method) {
 
             $output->writeln("Starting {$methodName}");
-            sleep(1);
             gc_collect_cycles(); // garbage collector to have precise memory consumption
+
+            $startingMemory = memory_get_usage();
 
             $params = new Params();
             $params->addParam('selectLimit', $this->getSelectLimit());
+            $params->addParam('iterations', $this->getIterations());
 
             if ($method['setUpCallback']) {
                 // Pass the shared objects explicitly to the setUpCallback function
@@ -57,14 +59,12 @@ class Benchmark
 
             $totalTime = 0;
             $miss = 0;
-            $startingMemory = memory_get_usage();
-
             for ($i = 0; $i < $this->iterations; $i++) {
 
                 $timeStart = microtime(true);
                 // Conditionally use the shared object based on its availability
                 try {
-                    @call_user_func($method['callback'], $params);
+                    $params = @call_user_func($method['callback'], $params);
                 } catch (\Throwable $throwable) {
                     if ($method['handleException']) {
                         call_user_func($method['handleException'], $throwable);
