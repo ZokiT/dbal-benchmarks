@@ -14,8 +14,8 @@ RUN apt-get install -y zip
 # install and enable imagic
 RUN apt-get update \
     && apt-get install -y libmagickwand-dev \
-    && pecl install -y imagick \
-    && docker-php-ext-enable imagick \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
 
 # use predefined config for php
 COPY devbox-php.ini /usr/local/etc/php/conf.d/devbox-php.ini
