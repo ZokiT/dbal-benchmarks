@@ -17,6 +17,8 @@ use Symfony\Component\Cache\Exception\CacheException;
 
 class DoctrineEntityManager
 {
+    use \App\User;
+
     /**
      * @throws MissingMappingDriverImplementation|Exception
      */
@@ -50,6 +52,38 @@ class DoctrineEntityManager
         /** @var User $user */
         $user = $userRepository->findOneBy([]);
         $params->addParam('user', $user);
+
+        return $params;
+    }
+
+    /**
+     * @throws MissingMappingDriverImplementation|Exception
+     * @throws NotSupported
+     * @throws \Exception
+     */
+    public static function prepareForDelete(Params $params): Params
+    {
+        $params = self::connect($params);
+
+        $iterations = $params->getParam('iterations');
+        $em = $params->getParam('doctrineEntityManager');
+
+        $user = new User(...User::fakeWithId());
+        $em->persist($user);
+        $em->flush();
+
+        // Get the repository for the User entity
+        $userRepository = $em->getRepository(User::class);
+
+        /** @var User $user */
+        $user = $userRepository->findOneBy([], ['id' => 'DESC']);
+        $params->addParam('minUserId', $user->getId());
+
+        for ($i = 1; $i < $iterations; $i++) {
+            $user = new User(...User::fakeWithId());
+            $em->persist($user);
+            $em->flush();
+        }
 
         return $params;
     }

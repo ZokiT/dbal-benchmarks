@@ -8,7 +8,7 @@ class User extends Illuminate\Database\Eloquent\Model
     use \App\User;
     protected $primaryKey = 'user_id';
     protected $table = 'users';
-    protected $fillable = ['username', 'email','registration_date', 'is_active', 'birth_date'];
+    protected $fillable = ['something', 'username', 'email','registration_date', 'is_active', 'birth_date'];
 
     public function orders(): Illuminate\Database\Eloquent\Relations\HasMany
     {

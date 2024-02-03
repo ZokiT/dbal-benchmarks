@@ -23,4 +23,20 @@ class EloquentModelConnection extends BaseConnection
 
         return $params;
     }
+
+    public static function prepareForDelete(Params $params): Params
+    {
+        $params = self::connect($params);
+        $iterations = $params->getParam('iterations');
+
+        User::insert(User::fake());
+        $minUserId = User::max('user_id');
+        $params->addParam('minUserId', $minUserId);
+
+        for ($i = 1; $i < $iterations; $i++) {
+            User::insert(User::fake());
+        }
+
+        return $params;
+    }
 }

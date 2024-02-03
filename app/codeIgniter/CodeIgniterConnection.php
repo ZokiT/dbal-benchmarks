@@ -74,4 +74,20 @@ class CodeIgniterConnection
 
         return $params;
     }
+
+    public static function prepareForORMDelete(Params $params): Params
+    {
+        $params = self::connect($params);
+        $iterations = $params->getParam('iterations');
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
+        $user = new User($baseConnection);
+        $userId = $user->insert(User::fake());
+        $params->addParam('minUserId', $userId);
+
+        for ($i = 1; $i < $iterations; $i++) {
+            $user->insert(User::fake());
+        }
+
+        return $params;
+    }
 }

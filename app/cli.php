@@ -3,6 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\Benchmark\Benchmark;
 use App\Benchmark\Commands\HashAlgorithm;
+use App\Benchmark\Commands\ORMDelete;
 use App\Benchmark\Commands\ORMInsert;
 use App\Benchmark\Commands\ORMSelect;
 use App\Benchmark\Commands\ORMUpdate;
@@ -26,6 +27,7 @@ try {
     $application->add(new QueryBuilderUpdate($benchmark));
     $application->add(new ORMUpdate($benchmark));
     $application->add(new QueryBuilderDelete($benchmark));
+    $application->add(new ORMDelete($benchmark));
 
     // register other commands here
     $application->add(new HashAlgorithm($benchmark));

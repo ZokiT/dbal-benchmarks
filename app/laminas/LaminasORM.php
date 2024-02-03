@@ -5,68 +5,55 @@ namespace App\laminas;
 use App\Benchmark\Params;
 use App\laminas\Models\User;
 use Laminas\Db\ResultSet\HydratingResultSet;
+use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Sql;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Hydrator\ClassMethodsHydrator;
 
 class LaminasORM
 {
-    public static function insert(Params $params): void {
-
-        // fix it using table gateway
+    public static function insert(Params $params): Params {
+        $tableGateway = $params->getParam('laminasTableGateway');
         $hydrator = new ClassMethodsHydrator(true, false);
-        // Hydrate a User object with data
         $user = $hydrator->hydrate(User::fake(), new User());
+        $tableGateway->insert($hydrator->extract($user));
 
-        $sql = $params->getParam('laminasSql');
-
-        // Build the SQL insert statement
-        $insert = $sql->insert('users');
-        $insert->values($hydrator->extract($user));
-
-        // Execute the insert statement
-        $statement = $sql->prepareStatementForSqlObject($insert);
-        $statement->execute();
+        return $params;
     }
 
-    public static function select(Params $params): void {
-        // fix it using table gateway
+    public static function select(Params $params): Params {
         $limit = $params->getParam('selectLimit');
-        $sql = $params->getParam('laminasSql');
-        $select    = $sql->select('users');
-        $select->where(['is_active' => 'false']);
-        $select->limit($limit);
+        $tableGateway = $params->getParam('laminasTableGateway');
+        $resultSet = $tableGateway->select(function (Select $select) use ($limit) {
+            $select->where(['is_active' => 'true'])->order('user_id DESC')->limit($limit);
+        });
+        // this is the first returned user as result
+        $resultSet->current()->userId;
 
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $result    = $statement->execute();
-
-        $hydrator = new ClassMethodsHydrator();
-        $resultSet = new HydratingResultSet(
-            $hydrator,
-            new User()
-        );
-        $resultSet->initialize($result);
-
-        // This is the returned User
-        $resultSet->current();
+        return $params;
     }
 
-    public static function update(Params $params): void {
-        // fix it using table gateway
+    public static function update(Params $params): Params {
+        /** @var TableGateway $tableGateway */
+        $tableGateway = $params->getParam('laminasTableGateway');
+        $userId = $params->getParam('userId');
+        $tableGateway->update(
+            ['email' => uniqid() . '@laminas_orm@example.com'],
+            ['user_id' => $userId]
+        );
 
-        /** @var Sql $sql */
-        $sql = $params->getParam('laminasSql');
-        /** @var User $user */
-        $user = $params->getParam('user');
+        return $params;
+    }
 
-        $user->setEmail(uniqid() . '@laminas_orm@example.com');
-        $update = $sql->update('users');
-        $update->set([
-            'email' => $user->getEmail(),
-        ]);
-        $update->where(['user_id' => $user->userId]);
+    public static function delete(Params $params): Params {
+        $tableGateway = $params->getParam('laminasTableGateway');
+        $userId = $params->getParam('minUserId');
 
-        $updateStatement = $sql->prepareStatementForSqlObject($update);
-        $updateStatement->execute();
+        $tableGateway->delete((new Where())->equalTo('user_id', $userId));
+        $params->addParam('minUserId', $userId + 1);
+
+        return $params;
     }
 
 }

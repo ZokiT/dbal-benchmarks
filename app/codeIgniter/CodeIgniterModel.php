@@ -10,10 +10,12 @@ use ReflectionException;
 
 class CodeIgniterModel
 {
-    public static function insert(Params $params): void {
+    public static function insert(Params $params): Params {
         $db = $params->getParam('codeigniterBaseConnection');
         $user = new User($db);
         $user->insert(User::fake());
+
+        return $params;
     }
 
     public static function select(Params $params): void {
@@ -40,5 +42,18 @@ class CodeIgniterModel
         if (!$updated) {
             throw new Exception('entity was not updated');
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function delete(Params $params): Params {
+        /** @var BaseConnection $baseConnection */
+        $baseConnection = $params->getParam('codeigniterBaseConnection');
+        $userModel = new User($baseConnection);
+        $userModel->delete($params->getParam('minUserId'));
+        $params->addParam('minUserId', $params->getParam('minUserId') + 1);
+
+        return $params;
     }
 }
