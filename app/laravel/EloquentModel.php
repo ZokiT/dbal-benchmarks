@@ -13,14 +13,19 @@ class EloquentModel
         return $params;
     }
 
-    public static function select(Params $params): void {
+    public static function select(Params $params): Params {
         $limit = $params->getParam('selectLimit');
         User::where('is_active', true)->limit($limit)->get();
+
+        return $params;
     }
 
-    public static function update(User $user): void {
+    public static function update(Params $params): Params {
+        $user = $params->getParam('user');
         $user->email = uniqid() . '@orm_laravel@example.com';
         $user->save();
+
+        return $params;
     }
 
     public static function delete(Params $params): Params {

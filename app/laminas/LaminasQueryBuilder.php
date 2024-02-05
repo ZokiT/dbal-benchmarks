@@ -12,7 +12,15 @@ class LaminasQueryBuilder
 {
     use User;
     public static function insert(Params $params): Params {
-//        $tableGateway->insert(self::fakeWithQuotes());
+        $sql = $params->getParam('laminasSql');
+//        $sql->table('users')->insert(self::fake());
+
+        $insert = $sql->insert('users');
+        $insert->values(self::fake());
+
+        // Execute the insert statement
+        $statement = $sql->prepareStatementForSqlObject($insert);
+        $statement->execute();
 
         return $params;
     }
@@ -32,43 +40,23 @@ class LaminasQueryBuilder
         $result->current();
 
         return $params;
-//        $limit = $params->getParam('selectLimit');
-//        $rowSet = $tableGateway->select(function (Select $select) {
-//            $select->where->equalTo('is_active', 'true');
-//            $select->limit($limit);
-//        });
-//
-//        // the result is Traversable, Countable object, so we need to actually get them
-//        $rowSet->current();
     }
 
     public static function update(Params $params): Params {
 
         /** @var Sql $sql */
         $sql = $params->getParam('laminasSql');
-        /** @var User $user */
-        $userId = $params->getParam('userId');
 
-        $user->setEmail(uniqid() . '@laminas_orm@example.com');
         $update = $sql->update('users');
         $update->set([
-            'email' => $user->getEmail(),
+            'email' => uniqid() . '@laminas_orm@example.com',
         ]);
-        $update->where(['user_id' => $userId]);
+        $update->where(['user_id' => $params->getParam('userId')]);
 
         $updateStatement = $sql->prepareStatementForSqlObject($update);
         $updateStatement->execute();
 
         return $params;
-//        /** @var TableGateway $tableGateway */
-//        $tableGateway = $params[0];
-//        $userId = $params[1];
-//
-//        // Perform the update operation
-//        $tableGateway->update(
-//            ['email' =>  uniqid() . "@laminas_update_example.com"],
-//            ['user_id' => $userId]
-//        );
     }
 
     public static function delete(Params $params): Params {

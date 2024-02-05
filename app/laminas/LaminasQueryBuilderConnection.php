@@ -60,6 +60,7 @@ class LaminasQueryBuilderConnection
         }
         $params->addParam('minUserId', $minUserId + 1);
 
+        die;
         return $params;
     }
 }

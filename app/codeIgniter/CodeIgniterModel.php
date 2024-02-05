@@ -18,18 +18,20 @@ class CodeIgniterModel
         return $params;
     }
 
-    public static function select(Params $params): void {
+    public static function select(Params $params): Params {
         $limit = $params->getParam('selectLimit');
         $db = $params->getParam('codeigniterBaseConnection');
         $user = new User($db);
         $user->where('is_active', true)->findAll($limit);
+
+        return $params;
     }
 
     /**
      * @throws ReflectionException
      * @throws Exception
      */
-    public static function update(Params $params): void {
+    public static function update(Params $params): Params {
         /** @var BaseConnection $db */
         $db = $params->getParam('codeigniterBaseConnection');
         $userModel = new User($db);
@@ -42,6 +44,8 @@ class CodeIgniterModel
         if (!$updated) {
             throw new Exception('entity was not updated');
         }
+
+        return $params;
     }
 
     /**
