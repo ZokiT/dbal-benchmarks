@@ -7,6 +7,7 @@ use App\Benchmark\Commands\ORMDelete;
 use App\Benchmark\Commands\ORMInsert;
 use App\Benchmark\Commands\ORMSelect;
 use App\Benchmark\Commands\ORMUpdate;
+use App\Benchmark\Commands\QueryBuilderComplexSelect;
 use App\Benchmark\Commands\QueryBuilderDelete;
 use App\Benchmark\Commands\QueryBuilderInsert;
 use App\Benchmark\Commands\QueryBuilderSelect;
@@ -28,6 +29,7 @@ try {
     $application->add(new ORMUpdate($benchmark));
     $application->add(new QueryBuilderDelete($benchmark));
     $application->add(new ORMDelete($benchmark));
+    $application->add(new QueryBuilderComplexSelect($benchmark));
 
     // register other commands here
     $application->add(new HashAlgorithm($benchmark));

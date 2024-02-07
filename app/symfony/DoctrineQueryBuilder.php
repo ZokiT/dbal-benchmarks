@@ -83,4 +83,43 @@ class DoctrineQueryBuilder
 
         return $params;
     }
+
+    /**
+     * @throws Exception
+     */
+    public static function complexQuerySelect(Params $params): Params {
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $params->getParam('doctrineQueryBuilder');
+        $limit = $params->getParam('selectLimit');
+
+        $queryBuilder->select('u.username AS user_name')
+           ->select('o.order_id as order_id')
+           ->select('o.order_date as order_date')
+           ->select('o.status AS order_status')
+           ->addSelect('SUM(od.quantity) AS total_ordered_quantity')
+           ->addSelect('AVG(p.price) AS avg_product_price')
+           ->addSelect('MAX(p.price) AS max_product_price')
+           ->addSelect('COUNT(DISTINCT p.product_id) AS unique_products_ordered')
+           ->from('users', 'u')
+           ->innerJoin('u', 'orders', 'o', 'u.user_id = o.user_id')
+           ->innerJoin('o', 'order_details', 'od', 'o.order_id = od.order_id')
+           ->innerJoin('od', 'products', 'p', 'od.product_id = p.product_id')
+           ->leftJoin('u', 'addresses', 'a', 'u.user_id = a.user_id')
+           ->where('u.is_active = :isActive')
+           ->andWhere('o.status IN (:status1, :status2)')
+           ->setParameter('isActive', true)
+           ->setParameter('status1', 'completed')
+            ->setParameter('status2', 'pending')
+           ->groupBy('u.username, o.order_id, o.order_date, o.status')
+           ->having('SUM(od.quantity)  > :quantity')
+           ->setParameter('quantity', 5)
+           ->orderBy('o.order_date', 'DESC')
+           ->setMaxResults(20);
+
+        $results = $queryBuilder->executeQuery()->fetchAllAssociative();
+
+        var_dump($results);
+
+        return $params;
+    }
 }

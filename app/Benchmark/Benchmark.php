@@ -163,7 +163,7 @@ class Benchmark
 
     public function getSelectLimit(): int
     {
-        return $this->selectLimit;
+        return $this->selectLimit > 0 ? $this->selectLimit : 10;
     }
 
     public function setUseLimit(bool $val)
