@@ -37,29 +37,29 @@ class QueryBuilderComplexSelect extends AbstractCommand
             [DoctrineQueryBuilderConnection::class, 'connect']
         );
 
-//        $this->getBenchmark()->addMethod(
-//            'eloquent',
-//            [EloquentQueryBuilder::class, 'select'],
-//            [EloquentQueryBuilderConnection::class, 'connect']
-//        );
-//
-//        $this->getBenchmark()->addMethod(
-//            'pdo',
-//            [PDOQueries::class, 'select'],
-//            [PDOConnection::class, 'connect']
-//        );
-//
-//        $this->getBenchmark()->addMethod(
-//            'laminas',
-//            [LaminasQueryBuilder::class, 'select'],
-//            [LaminasQueryBuilderConnection::class, 'connect']
-//        );
-//
-//        $this->getBenchmark()->addMethod(
-//            'codeIgniter',
-//            [CodeIgniterQueryBuilder::class, 'select'],
-//            [CodeIgniterConnection::class, 'connect']
-//        );
+        $this->getBenchmark()->addMethod(
+            'eloquent',
+            [EloquentQueryBuilder::class, 'complexQuerySelect'],
+            [EloquentQueryBuilderConnection::class, 'connect']
+        );
+
+        $this->getBenchmark()->addMethod(
+            'pdo',
+            [PDOQueries::class, 'complexQuerySelect'],
+            [PDOConnection::class, 'connect']
+        );
+
+        $this->getBenchmark()->addMethod(
+            'laminas',
+            [LaminasQueryBuilder::class, 'complexQuerySelect'],
+            [LaminasQueryBuilderConnection::class, 'connect']
+        );
+
+        $this->getBenchmark()->addMethod(
+            'codeIgniter',
+            [CodeIgniterQueryBuilder::class, 'complexQuerySelect'],
+            [CodeIgniterConnection::class, 'connect']
+        );
 
         return parent::execute($input, $output);
     }

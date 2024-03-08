@@ -109,16 +109,15 @@ class DoctrineQueryBuilder
            ->andWhere('o.status IN (:status1, :status2)')
            ->setParameter('isActive', true)
            ->setParameter('status1', 'completed')
-            ->setParameter('status2', 'pending')
+           ->setParameter('status2', 'pending')
            ->groupBy('u.username, o.order_id, o.order_date, o.status')
            ->having('SUM(od.quantity)  > :quantity')
            ->setParameter('quantity', 5)
            ->orderBy('o.order_date', 'DESC')
-           ->setMaxResults(20);
+           ->setMaxResults($limit);
 
-        $results = $queryBuilder->executeQuery()->fetchAllAssociative();
-
-        var_dump($results);
+        $queryBuilder->executeQuery()->fetchAllAssociative();
+        $queryBuilder->resetQueryParts();
 
         return $params;
     }
