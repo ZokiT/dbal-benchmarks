@@ -21,7 +21,7 @@ abstract class AbstractCommand extends Command
 
     const ITERATIONS_OPTION = 'iterations';
     const IMAGE_OPTION      = 'image';
-    const CHART_OPTION      = 'graph';
+    const CHART_OPTION      = 'chart';
     const SELECT_LIMIT      = 'selectLimit';
 
 
