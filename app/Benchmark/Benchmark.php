@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Benchmark
 {
-    const DEFAULT_ITERATIONS = 100;
+    const DEFAULT_ITERATIONS = 1000;
 
     private array $methods   = [];
 
