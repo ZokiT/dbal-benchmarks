@@ -35,4 +35,21 @@ class EloquentModel
 
         return $params;
     }
+
+    public static function complexQuerySelect(Params $params): Params {
+        $limit = $params->getParam('selectLimit');
+
+        $users = User::where('is_active', true)
+                     ->whereHas('orders', function ($query) use ($limit) {
+                         $query->join('order_details', 'orders.order_id', '=', 'order_details.order_id') // Explicit join
+                               ->whereIn('orders.status', ['pending', 'completed'])
+                               ->groupBy('orders.order_id', 'order_details.detail_id')
+                               ->havingRaw('SUM(order_details.quantity) > ?', [5]);
+                     })
+                     ->limit(1)
+                     ->orderBy('user_id')
+                     ->get();
+
+        return $params;
+    }
 }

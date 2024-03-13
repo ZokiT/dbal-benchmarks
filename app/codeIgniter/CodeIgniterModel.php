@@ -6,6 +6,7 @@ use App\Benchmark\Params;
 use CodeIgniter\Database\BaseConnection;
 use App\codeIgniter\Models\User;
 use Exception;
+use Laminas\Db\Sql\Select;
 use ReflectionException;
 
 class CodeIgniterModel
@@ -60,4 +61,31 @@ class CodeIgniterModel
 
         return $params;
     }
+
+    public static function complexQuerySelect(Params $params): Params {
+        $limit = $params->getParam('selectLimit');
+        $db = $params->getParam('codeigniterBaseConnection');
+        $user = new User($db);
+        $user->select('users.*')
+             ->join('orders', 'users.user_id = orders.user_id')
+             ->join('order_details', 'orders.order_id = order_details.order_id')
+             ->where('is_active', true)
+             ->whereIn('orders.status',['completed', 'pending'])
+            ->groupBy([
+                'users.user_id',
+                'orders.order_id',
+                'orders.order_date',
+                'orders.status'
+            ])
+            ->having('SUM(order_details.quantity) >', 5)
+            ->orderBy('users.user_id', 'ASC')
+            ->limit($limit);
+
+
+        // Get results as User objects
+        $users = $user->get()->getCustomResultObject(User::class);
+
+        return $params;
+    }
+
 }

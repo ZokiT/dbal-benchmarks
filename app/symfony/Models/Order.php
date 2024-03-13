@@ -4,6 +4,7 @@ namespace App\symfony\Models;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -13,7 +14,7 @@ class Order
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "AUTO")]
     #[ORM\Column(name: "order_id", type: "bigint", nullable: false)]
-    protected ?int $id = null;
+    protected ?int $orderId = null;
 
     #[ORM\ManyToOne(targetEntity: "User")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "user_id", nullable: false, onDelete: "SET NULL")]
@@ -37,6 +38,12 @@ class Order
     #[ORM\Column(name: "updated_at", type: "datetime")]
     protected DateTimeInterface $updatedAt;
 
+    #[ORM\OneToMany(mappedBy: "order", targetEntity: OrderDetails::class)]
+    protected Collection $orderDetails;
+
+    #[ORM\OneToMany(mappedBy: "order", targetEntity: Product::class)]
+    protected Collection $products;
+
     public function __construct(
         User $user,
         DateTimeInterface $orderDate,
@@ -58,7 +65,7 @@ class Order
      */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->orderId;
     }
 
     /**
@@ -66,7 +73,7 @@ class Order
      */
     public function setId(?int $id): void
     {
-        $this->id = $id;
+        $this->orderId = $id;
     }
 
     public function setUser(User $user): void
@@ -84,7 +91,7 @@ class Order
         return $this->orderDate;
     }
 
-    public function setOrderDate(DateTimeInterface $orderDate): DateTimeInterface
+    public function setOrderDate(DateTimeInterface $orderDate): void
     {
         $this->orderDate = $orderDate;
     }
@@ -151,6 +158,26 @@ class Order
     public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    public function getOrderId(): ?int
+    {
+        return $this->orderId;
+    }
+
+    public function setOrderId(?int $orderId): void
+    {
+        $this->orderId = $orderId;
+    }
+
+    public function getOrderDetails(): OrderDetails
+    {
+        return $this->orderDetails;
+    }
+
+    public function setOrderDetails(OrderDetails $orderDetails): void
+    {
+        $this->orderDetails = $orderDetails;
     }
 
     /**

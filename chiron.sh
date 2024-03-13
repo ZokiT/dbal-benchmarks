@@ -53,9 +53,9 @@ if [ "$1" = "init" ]; then
 
     # Exec into the container
     echo "Executing shell in app-dbal-benchmarks..."
-    ${command_prefix}docker exec -it app-dbal-benchmarks sh
+    ${command_prefix}docker exec -it app-dbal-benchmarks bash
 elif [ "$1" = "exec" ]; then
-    ${command_prefix}docker exec -it app-dbal-benchmarks sh
+    ${command_prefix}docker exec -it app-dbal-benchmarks bash
 elif [ "$1" = "fresh" ]; then
     echo "recreating the DB tables"
     ${command_prefix}docker exec -it db-dbal-benchmarks sh -c "psql -U user -d dbal_benchmarks -f /var/lib/pgsql/drop-tables.sql"
