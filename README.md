@@ -77,9 +77,11 @@ There are three options you may provide along with the commands:
 
 `-i [number]` - as number of iterations
 
-`--graph` - to save the results to a (for now) json file (public/charts) and show the results as Chart on localhost, to show the charts you need to include the file in the index.html files const
+`--graph`     - to save the results to a (for now) json file (public/charts) and show the results as Chart on localhost, to show the charts you need to include the file in the index.html files const
 
-`--image` - to store the results as image (public/images)
+`--image`     - to store the results as image (public/images)
+
+`-l [number]` - limit parameter for the select queries
 
 
 ## Customization
@@ -107,26 +109,32 @@ The Hash Algorithm Benchmarks showcase a straightforward approach to integrate n
 
        public function execute(InputInterface $input, OutputInterface $output): int
        {
-           // Example with setUp used, preparing data for the benchmark
+
            $this->getBenchmark()->addMethod(
-               'md5',
-               function (string $string) {
-                   $hash = md5($string); // actual benchmark callback, uses what is returned in setUp callback
+               'sha1', // method name shown in the results
+               function (Params $params) {
+                   // function that will be benchmarked
+                   $hash = sha1($params->getParam('stringToBeHashed'));
+                   return $params;
                },
-               function () {
-                   return 'abcdefgh'; // setUp callback, returned value is used in actual benchmark callback
+               function (Params $params) {
+                   // preparing function that will pass the params to the benchmarked function
+                   $params->addParam('stringToBeHashed', 'abcdefgh');
+                   return $params;
                }
            );
 
            $this->getBenchmark()->addMethod(
-               'sha1',
-               function () {
-                   $string = 'abcdefgh';
-                   $hash = sha1($string);
+               'md5',
+               function (Params $params) {
+                   $hash = md5($params->getParam('stringToBeHashed'));
+                   return $params;
+               },
+               function (Params $params) {
+                   $params->addParam('stringToBeHashed', 'abcdefgh');
+                   return $params;
                }
            );
-   
-           // Add more methods to benchmark
 
            return parent::execute($input, $output);
        }
@@ -157,13 +165,13 @@ Within the `execute` method, use the `addMethod` function to add benchmarks for 
     This will execute the benchmark for the specified hash algorithms and provide performance insights.
     
     ```plaintext
-    +--------+------------------- hashAlgorithm ------------+------+--------+
-    | Method | Avg. Execution Time (ms) | Memory Usage (KB) | Hits | Misses |
-    +--------+--------------------------+-------------------+------+--------+
-    | md5    | 0.000609                 | 0                 | 1000 | 0      |
-    +--------+--------------------------+-------------------+------+--------+
-    | sha1   | 0.000711                 | 0                 | 1000 | 0      |
-    +--------+--------------------------+-------------------+------+--------+
+   +--------+---------------------- hashAlgorithm ---------+------------+--------+
+   | Method | Avg. Execution Time (ms) | Memory Usage (KB) | Iterations | Misses |
+   +--------+--------------------------+-------------------+------------+--------+
+   | sha1   | 0.000926                 | 2.015625          | 1000       | 0      |
+   +--------+--------------------------+-------------------+------------+--------+
+   | md5    | 0.000949                 | 0.421875          | 1000       | 0      |
+   +--------+--------------------------+-------------------+------------+--------+
     ```
 
 Feel free to extend this pattern to add more benchmarks as needed, and leverage the flexibility to include setup callbacks for additional configurations.
